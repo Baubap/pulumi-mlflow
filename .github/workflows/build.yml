@@ -14,8 +14,10 @@ env:
   PROVIDER: mlflow
 
 jobs:
+  # Job name is "continuous-integration" so it reports the status-check context
+  # required by the repo's `main` branch protection (Baubap default).
   build_test:
-    name: build + unit tests + schema drift
+    name: continuous-integration
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
