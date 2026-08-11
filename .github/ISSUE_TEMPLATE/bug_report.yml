@@ -1,0 +1,70 @@
+name: 🐛 Bug report
+description: Something isn't working as expected in the MLflow provider.
+labels: ["kind/bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug! Please fill in the details below — the provider and MLflow **server version**
+        matter a lot for reproducing registry/auth issues.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight checklist
+      options:
+        - label: I searched [existing issues](https://github.com/Baubap/pulumi-mlflow/issues) and this isn't a duplicate.
+          required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: The smallest Pulumi program (any language) and the commands that trigger the bug.
+      render: typescript
+    validations:
+      required: true
+  - type: input
+    id: provider-version
+    attributes:
+      label: Provider version
+      description: e.g. "@baubap/mlflow 0.1.0" / "baubap-mlflow 0.1.0" / plugin version.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language SDK
+      options: [TypeScript/JavaScript, Python, Go, YAML]
+    validations:
+      required: true
+  - type: dropdown
+    id: mlflow-major
+    attributes:
+      label: MLflow server major version
+      options: ["2.x", "3.x", "Databricks-hosted", "Other/unknown"]
+    validations:
+      required: true
+  - type: input
+    id: mlflow-version
+    attributes:
+      label: Exact MLflow server version
+      description: From `GET <trackingUri>/version` (e.g. 2.16.2, 3.1.0).
+      placeholder: "3.1.0"
+  - type: dropdown
+    id: auth
+    attributes:
+      label: Auth mode
+      options: ["None", "HTTP basic (username/password)", "Bearer token", "mlflow.server.auth app"]
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error output
+      description: Paste the error, and if helpful `pulumi up --logtostderr -v=9 2> out.txt` output. Redact secrets.
+      render: shell

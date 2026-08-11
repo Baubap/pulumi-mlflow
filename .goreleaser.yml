@@ -1,0 +1,33 @@
+project_name: pulumi-mlflow
+builds:
+  - id: build-provider
+    dir: .
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    main: ./provider/cmd/pulumi-resource-mlflow/
+    ldflags:
+      - -s
+      - -w
+      - -X github.com/Baubap/pulumi-mlflow/provider/version.Version={{.Tag}}
+    binary: pulumi-resource-mlflow
+archives:
+  - id: archive
+    name_template: "{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}"
+checksum:
+  name_template: "{{ .ProjectName }}-{{ .Tag }}-checksums.txt"
+snapshot:
+  name_template: "{{ .Tag }}-SNAPSHOT"
+changelog:
+  disable: true
+# goreleaser creates the GitHub Release and attaches the plugin archives; the
+# Pulumi CLI resolves them via pluginDownloadURL github://api.github.com/Baubap/pulumi-mlflow.
+release:
+  disable: false

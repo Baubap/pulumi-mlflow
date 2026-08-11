@@ -1,0 +1,68 @@
+name: build
+on:
+  pull_request:
+    paths-ignore:
+      - "**.md"
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+
+env:
+  GOVERSION: "1.26.x"
+  PROVIDER: mlflow
+
+jobs:
+  build_test:
+    name: build + unit tests + schema drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache: true
+      - name: Install pulumi CLI
+        uses: pulumi/actions@v6
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1
+        with:
+          repo: pulumi/pulumictl
+      - name: Build provider
+        run: make provider
+      - name: Vet
+        run: go vet ./...
+      - name: Unit tests
+        run: make test_provider
+      - name: Regenerate schema
+        run: make generate_schema
+      - name: Fail if schema.json is stale (run `make generate_schema` and commit)
+        run: git diff --exit-code -- provider/cmd/pulumi-resource-mlflow/schema.json
+
+  schema_check:
+    name: schema breaking-change check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache: true
+      - uses: pulumi/actions@v6
+      - name: Install schema-tools
+        uses: jaxxstorm/action-install-gh-release@v1
+        with:
+          repo: pulumi/schema-tools
+      - name: Build provider + schema
+        run: make generate_schema
+      - name: Compare schema against default branch
+        run: |
+          schema-tools compare \
+            -p "${{ env.PROVIDER }}" \
+            -o "${{ github.event.repository.default_branch }}" \
+            -n --local-path=provider/cmd/pulumi-resource-mlflow/schema.json || true

@@ -1,0 +1,162 @@
+name: release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "!v*.*.*-**"
+
+env:
+  GOVERSION: "1.26.x"
+  NODEVERSION: "20.x"
+  PYTHONVERSION: "3.11"
+  PROVIDER: mlflow
+
+jobs:
+  prerequisites:
+    name: build provider + schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Derive version from tag
+        id: version
+        uses: pulumi/provider-version-action@v2
+        with:
+          set-env: PROVIDER_VERSION
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache: true
+      - uses: pulumi/actions@v6
+      - uses: jaxxstorm/action-install-gh-release@v1
+        with:
+          repo: pulumi/pulumictl
+      - name: Build provider + schema
+        run: make provider generate_schema
+      - name: Package provider binary
+        run: tar -zcf pulumi-${{ env.PROVIDER }}-provider.tar.gz -C bin pulumi-resource-${{ env.PROVIDER }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pulumi-${{ env.PROVIDER }}-provider.tar.gz
+          path: pulumi-${{ env.PROVIDER }}-provider.tar.gz
+
+  build_sdks:
+    name: build ${{ matrix.language }} SDK
+    needs: prerequisites
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [nodejs, python, go]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Derive version from tag
+        uses: pulumi/provider-version-action@v2
+        with:
+          set-env: PROVIDER_VERSION
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache: true
+      - uses: pulumi/actions@v6
+      - uses: jaxxstorm/action-install-gh-release@v1
+        with:
+          repo: pulumi/pulumictl
+      - name: Generate ${{ matrix.language }} SDK
+        run: make generate_${{ matrix.language }}
+      - name: Package SDK
+        run: tar -zcf ${{ matrix.language }}-sdk.tar.gz -C sdk/${{ matrix.language }} .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.language }}-sdk.tar.gz
+          path: ${{ matrix.language }}-sdk.tar.gz
+
+  publish_plugin:
+    name: publish plugin binaries (GitHub Release)
+    needs: build_sdks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache: true
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean --timeout 60m
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish_sdks:
+    name: publish npm + PyPI SDKs
+    needs: publish_plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Derive version from tag
+        uses: pulumi/provider-version-action@v2
+        with:
+          set-env: PROVIDER_VERSION
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # First release ships TypeScript + Python. Add ,dotnet / java once their
+      # registry namespaces (NuGet / Sonatype) are set up.
+      - name: Publish SDKs
+        uses: pulumi/pulumi-package-publisher@v0.0.22
+        with:
+          sdk: nodejs,python
+          version: ${{ env.PROVIDER_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
+  publish_go_sdk:
+    name: publish Go SDK (module tag)
+    needs: publish_plugin
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Derive version from tag
+        id: version
+        uses: pulumi/provider-version-action@v2
+        with:
+          set-env: PROVIDER_VERSION
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache: true
+      - uses: pulumi/actions@v6
+      - uses: jaxxstorm/action-install-gh-release@v1
+        with:
+          repo: pulumi/pulumictl
+      - name: Generate Go SDK
+        run: make generate_go
+      - name: Publish Go SDK
+        uses: pulumi/publish-go-sdk-action@v1
+        with:
+          repository: ${{ github.repository }}
+          base-ref: ${{ github.sha }}
+          source: sdk
+          path: sdk
+          version: ${{ env.PROVIDER_VERSION }}
+          additive-import-path: github.com/Baubap/pulumi-mlflow/sdk
+          files: |
+            go/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

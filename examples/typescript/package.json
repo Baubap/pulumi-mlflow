@@ -1,0 +1,10 @@
+{
+  "name": "mlflow-typescript-example",
+  "devDependencies": {
+    "@types/node": "^20"
+  },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.0.0",
+    "@baubap/mlflow": "^0.1.0"
+  }
+}

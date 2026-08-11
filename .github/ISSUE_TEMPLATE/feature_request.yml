@@ -1,0 +1,34 @@
+name: 💡 Feature request
+description: Suggest a new resource, function, or capability.
+labels: ["kind/enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: What are you trying to do, and what's missing today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: The resource/function/behavior you'd like. Link the relevant MLflow REST endpoint if you know it.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - tracking (experiments)
+        - registry (models / versions / aliases)
+        - auth (users / permissions)
+        - "MLflow 3.x (webhooks / genai / gateway)"
+        - provider config / SDKs / CI
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: mlflow-support
+    attributes:
+      label: Which MLflow versions need this?
+      options: ["2.x and 3.x", "3.x only", "2.x only", "not sure"]
