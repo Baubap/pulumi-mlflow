@@ -2,6 +2,7 @@ package tracking
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -130,7 +131,7 @@ func (Experiment) Read(
 	cl := infer.GetConfig[client.Config](ctx).Client()
 	dto, err := fetchExperiment(ctx, cl, req.ID)
 	if err != nil {
-		if client.IsNotFound(err) {
+		if errors.Is(err, client.ErrNotFound) {
 			// Empty ID tells Pulumi the resource no longer exists.
 			return infer.ReadResponse[ExperimentArgs, ExperimentState]{}, nil
 		}
@@ -201,7 +202,7 @@ func (Experiment) Delete(
 	cl := infer.GetConfig[client.Config](ctx).Client()
 	err := cl.Do(ctx, http.MethodPost, "experiments/delete", nil,
 		map[string]any{"experiment_id": req.State.ExperimentID}, nil)
-	if err != nil && !client.IsNotFound(err) {
+	if err != nil && !errors.Is(err, client.ErrNotFound) {
 		return infer.DeleteResponse{}, err
 	}
 	return infer.DeleteResponse{}, nil

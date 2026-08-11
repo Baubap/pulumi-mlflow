@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -112,7 +113,7 @@ func (User) Read(
 	}
 	u, err := fetchUser(ctx, api, username)
 	if err != nil {
-		if client.IsNotFound(err) {
+		if errors.Is(err, client.ErrNotFound) {
 			return infer.ReadResponse[UserArgs, UserState]{}, nil
 		}
 		return infer.ReadResponse[UserArgs, UserState]{}, authPluginError(err)
@@ -169,7 +170,7 @@ func (User) Delete(
 ) (infer.DeleteResponse, error) {
 	api := infer.GetConfig[client.Config](ctx).Client()
 	q := url.Values{"username": {req.State.Username}}
-	if err := api.Do(ctx, http.MethodDelete, "users/delete", q, nil, nil); err != nil && !client.IsNotFound(err) {
+	if err := api.Do(ctx, http.MethodDelete, "users/delete", q, nil, nil); err != nil && !errors.Is(err, client.ErrNotFound) {
 		return infer.DeleteResponse{}, err
 	}
 	return infer.DeleteResponse{}, nil

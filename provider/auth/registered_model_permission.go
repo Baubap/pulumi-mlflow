@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -94,7 +95,7 @@ func (RegisteredModelPermission) Read(
 	}
 	p, err := fetchRegisteredModelPermission(ctx, api, name, username)
 	if err != nil {
-		if client.IsNotFound(err) {
+		if errors.Is(err, client.ErrNotFound) {
 			return infer.ReadResponse[RegisteredModelPermissionArgs, RegisteredModelPermissionState]{}, nil
 		}
 		return infer.ReadResponse[RegisteredModelPermissionArgs, RegisteredModelPermissionState]{}, authPluginError(err)
@@ -142,7 +143,7 @@ func (RegisteredModelPermission) Delete(
 	api := infer.GetConfig[client.Config](ctx).Client()
 	q := url.Values{"name": {req.State.Name}, "username": {req.State.Username}}
 	if err := api.Do(ctx, http.MethodDelete, "registered-models/permissions/delete", q, nil, nil); err != nil &&
-		!client.IsNotFound(err) {
+		!errors.Is(err, client.ErrNotFound) {
 		return infer.DeleteResponse{}, err
 	}
 	return infer.DeleteResponse{}, nil

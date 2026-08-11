@@ -8,7 +8,6 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
@@ -37,9 +36,7 @@ func Functions() []infer.InferredFunction {
 // authPluginError annotates "endpoint missing" failures with a hint that the
 // MLflow auth app must be enabled, since the auth REST API only exists then.
 func authPluginError(err error) error {
-	var apiErr *client.APIError
-	if errors.As(err, &apiErr) &&
-		(apiErr.ErrorCode == "ENDPOINT_NOT_FOUND" || apiErr.StatusCode == http.StatusNotFound) {
+	if errors.Is(err, client.ErrEndpointNotFound) {
 		return fmt.Errorf("%w — the MLflow auth REST API is unavailable; run the server with the "+
 			"`mlflow.server.auth` app enabled (e.g. `mlflow server --app-name basic-auth`)", err)
 	}

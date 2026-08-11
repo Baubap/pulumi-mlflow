@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -88,7 +89,7 @@ func (RegisteredModelAlias) Read(
 		ModelVersion modelVersionDTO `json:"model_version"`
 	}
 	if err := api.Do(ctx, http.MethodGet, "registered-models/alias", q, nil, &resp); err != nil {
-		if client.IsNotFound(err) {
+		if errors.Is(err, client.ErrNotFound) {
 			return infer.ReadResponse[RegisteredModelAliasArgs, RegisteredModelAliasState]{}, nil
 		}
 		return infer.ReadResponse[RegisteredModelAliasArgs, RegisteredModelAliasState]{}, err
@@ -125,7 +126,7 @@ func (RegisteredModelAlias) Delete(
 	body := map[string]any{"name": in.ModelName, "alias": in.Alias}
 	q := url.Values{"name": {in.ModelName}, "alias": {in.Alias}}
 	err := api.Do(ctx, http.MethodDelete, "registered-models/alias", q, body, nil)
-	if err != nil && client.IsNotFound(err) {
+	if err != nil && errors.Is(err, client.ErrNotFound) {
 		err = nil
 	}
 	return infer.DeleteResponse{}, err

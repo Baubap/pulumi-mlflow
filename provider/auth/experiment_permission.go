@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -94,7 +95,7 @@ func (ExperimentPermission) Read(
 	}
 	p, err := fetchExperimentPermission(ctx, api, experimentID, username)
 	if err != nil {
-		if client.IsNotFound(err) {
+		if errors.Is(err, client.ErrNotFound) {
 			return infer.ReadResponse[ExperimentPermissionArgs, ExperimentPermissionState]{}, nil
 		}
 		return infer.ReadResponse[ExperimentPermissionArgs, ExperimentPermissionState]{}, authPluginError(err)
@@ -142,7 +143,7 @@ func (ExperimentPermission) Delete(
 	api := infer.GetConfig[client.Config](ctx).Client()
 	q := url.Values{"experiment_id": {req.State.ExperimentId}, "username": {req.State.Username}}
 	if err := api.Do(ctx, http.MethodDelete, "experiments/permissions/delete", q, nil, nil); err != nil &&
-		!client.IsNotFound(err) {
+		!errors.Is(err, client.ErrNotFound) {
 		return infer.DeleteResponse{}, err
 	}
 	return infer.DeleteResponse{}, nil

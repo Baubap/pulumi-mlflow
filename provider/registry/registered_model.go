@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -86,7 +87,7 @@ func (RegisteredModel) Read(
 	api := infer.GetConfig[client.Config](ctx).Client()
 	dto, err := getRegisteredModel(ctx, api, req.ID)
 	if err != nil {
-		if client.IsNotFound(err) {
+		if errors.Is(err, client.ErrNotFound) {
 			return infer.ReadResponse[RegisteredModelArgs, RegisteredModelState]{}, nil
 		}
 		return infer.ReadResponse[RegisteredModelArgs, RegisteredModelState]{}, err
@@ -153,7 +154,7 @@ func (RegisteredModel) Delete(
 	body := map[string]any{"name": req.State.Name}
 	q := url.Values{"name": {req.State.Name}}
 	err := api.Do(ctx, http.MethodDelete, "registered-models/delete", q, body, nil)
-	if err != nil && client.IsNotFound(err) {
+	if err != nil && errors.Is(err, client.ErrNotFound) {
 		err = nil
 	}
 	return infer.DeleteResponse{}, err

@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -163,7 +164,7 @@ func (ModelVersion) Read(
 	api := infer.GetConfig[client.Config](ctx).Client()
 	dto, err := getModelVersion(ctx, api, name, version)
 	if err != nil {
-		if client.IsNotFound(err) {
+		if errors.Is(err, client.ErrNotFound) {
 			return infer.ReadResponse[ModelVersionArgs, ModelVersionState]{}, nil
 		}
 		return infer.ReadResponse[ModelVersionArgs, ModelVersionState]{}, err
@@ -240,7 +241,7 @@ func (ModelVersion) Delete(
 	body := map[string]any{"name": req.State.Name, "version": req.State.Version}
 	q := url.Values{"name": {req.State.Name}, "version": {req.State.Version}}
 	err := api.Do(ctx, http.MethodDelete, "model-versions/delete", q, body, nil)
-	if err != nil && client.IsNotFound(err) {
+	if err != nil && errors.Is(err, client.ErrNotFound) {
 		err = nil
 	}
 	return infer.DeleteResponse{}, err
