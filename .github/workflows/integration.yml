@@ -49,7 +49,7 @@ jobs:
           # Full sweep (weekly cron / manual `full`): latest patch of every supported
           # minor. Floor is 2.9 (aliases mature; stages deprecated). Older versions can
           # still be tested ad-hoc via the `versions` input.
-          FULL_SET: "v2.9.2,v2.10.2,v2.11.3,v2.12.2,v2.13.2,v2.14.3,v2.15.1,v2.16.2,v2.17.2,v2.18.0,v2.19.0,v2.20.4,v2.21.3,v2.22.4,v3.0.1,v3.1.4,v3.2.0,v3.3.2,v3.4.0,v3.5.1,v3.6.0,v3.7.0,v3.8.1,v3.9.0,v3.10.1,v3.11.1,v3.12.0,v3.13.0,v3.14.0,v3.15.1"
+          FULL_SET: "v2.9.2,v2.10.2,v2.11.3,v2.12.2,v2.13.2,v2.14.3,v2.15.1,v2.16.2,v2.17.2,v2.18.0,v2.19.0,v2.20.3,v2.21.3,v2.22.4,v3.0.1,v3.1.4,v3.2.0,v3.3.2,v3.4.0,v3.5.1,v3.6.0,v3.7.0,v3.8.1,v3.9.0,v3.10.1,v3.11.1,v3.12.0,v3.13.0,v3.14.0,v3.15.1"
         run: |
           IN="${{ github.event.inputs.versions }}"
           if [ -n "$IN" ]; then
