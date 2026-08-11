@@ -10,8 +10,12 @@ on:
   workflow_dispatch:
     inputs:
       versions:
-        description: "Comma-separated MLflow image tags to spin up and test"
-        default: "v2.16.2,v3.1.0"
+        description: "Comma-separated MLflow image tags (overrides the default set)"
+        default: ""
+      full:
+        description: "Run the full sweep across every supported minor version"
+        type: boolean
+        default: false
       uris:
         description: "Comma-separated external tracking server URIs to test (in addition to ephemeral)"
         default: ""
@@ -23,6 +27,9 @@ on:
       - ".github/workflows/integration.yml"
   push:
     branches: [main]
+  schedule:
+    # Weekly full minor-version sweep (Mondays 06:00 UTC).
+    - cron: "0 6 * * 1"
 
 permissions:
   contents: read
@@ -36,9 +43,23 @@ jobs:
       uris: ${{ steps.set.outputs.uris }}
     steps:
       - id: set
+        env:
+          # Fast, blocking set for PRs/pushes: supported floor + latest of each major.
+          PR_SET: "v2.9.2,v2.22.4,v3.15.1"
+          # Full sweep (weekly cron / manual `full`): latest patch of every supported
+          # minor. Floor is 2.9 (aliases mature; stages deprecated). Older versions can
+          # still be tested ad-hoc via the `versions` input.
+          FULL_SET: "v2.9.2,v2.10.2,v2.11.3,v2.12.2,v2.13.2,v2.14.3,v2.15.1,v2.16.2,v2.17.2,v2.18.0,v2.19.0,v2.20.4,v2.21.3,v2.22.4,v3.0.1,v3.1.4,v3.2.0,v3.3.2,v3.4.0,v3.5.1,v3.6.0,v3.7.0,v3.8.1,v3.9.0,v3.10.1,v3.11.1,v3.12.0,v3.13.0,v3.14.0,v3.15.1"
         run: |
-          VERSIONS="${{ github.event.inputs.versions }}"
-          [ -z "$VERSIONS" ] && VERSIONS="v2.16.2,v3.1.0"
+          IN="${{ github.event.inputs.versions }}"
+          if [ -n "$IN" ]; then
+            VERSIONS="$IN"                                   # explicit override
+          elif [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.full }}" = "true" ]; then
+            VERSIONS="$FULL_SET"                             # weekly / manual full sweep
+          else
+            VERSIONS="$PR_SET"                              # PR / push default
+          fi
+          echo "Selected MLflow versions: $VERSIONS"
           echo "versions=$(echo "$VERSIONS" | jq -R -c 'split(",") | map(gsub("^\\s+|\\s+$";""))')" >> "$GITHUB_OUTPUT"
           # External URIs: dispatch input takes precedence, else repo variable.
           URIS="${{ github.event.inputs.uris }}"
