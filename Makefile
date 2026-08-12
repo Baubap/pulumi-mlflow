@@ -155,6 +155,12 @@ test_matrix:
 
 # ---- misc --------------------------------------------------------------------
 
+.PHONY: install-hooks
+install-hooks:
+	git config core.hooksPath .githooks
+	@echo "git hooks enabled (core.hooksPath=.githooks). The pre-commit hook"
+	@echo "regenerates schema.json + SDKs when provider Go source changes."
+
 .PHONY: lint
 lint:
 	golangci-lint --path-prefix provider --config .golangci.yml run --fix
