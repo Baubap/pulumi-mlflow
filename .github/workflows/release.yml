@@ -67,6 +67,14 @@ jobs:
           repo: pulumi/pulumictl
       - name: Generate ${{ matrix.language }} SDK
         run: make generate_${{ matrix.language }}
+      - name: Build Node.js SDK
+        # npm publishes the compiled SDK from sdk/nodejs/bin, so nodejs must be
+        # built (tsc), not just generated. Python builds its wheel in
+        # publish_python; Go needs only the source.
+        if: matrix.language == 'nodejs'
+        run: |
+          npm install -g yarn
+          make build_nodejs
       - name: Package SDK
         # The file inside the artifact must be <lang>.tar.gz — pulumi-package-publisher
         # (and publish_python) extract sdk/<lang>.tar.gz after download.
