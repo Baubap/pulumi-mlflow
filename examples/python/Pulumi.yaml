@@ -1,6 +1,0 @@
-name: mlflow-python-example
-runtime: python
-description: Creates an MLflow experiment, a registered model and a model version.
-config:
-  mlflow:trackingUri:
-    type: string
