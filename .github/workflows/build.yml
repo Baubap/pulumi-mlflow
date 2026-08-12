@@ -28,7 +28,7 @@ jobs:
       - name: Install pulumi CLI
         uses: pulumi/actions@v7
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v3
+        uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: pulumi/pulumictl
       - name: Build provider
@@ -57,7 +57,7 @@ jobs:
           cache: true
       - uses: pulumi/actions@v7
       - name: Install schema-tools
-        uses: jaxxstorm/action-install-gh-release@v3
+        uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: pulumi/schema-tools
       - name: Build provider + schema
