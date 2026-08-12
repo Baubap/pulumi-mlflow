@@ -712,6 +712,45 @@
         "alias",
         "version"
       ]
+    },
+    "mlflow:registry:RegisteredModelTag": {
+      "description": "Manages a single key/value tag on a registered model that is owned elsewhere (e.g. created by a training pipeline). Unlike the `tags` map on RegisteredModel it does not own the model: it sets the tag on create, updates the value in place, and removes only that tag on delete. This mirrors the `aws.ec2.Tag`-style pattern for managing one attribute of an externally-owned resource. Backed by the MLflow `registered-models/set-tag` and `registered-models/delete-tag` endpoints.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\n// Publish a service's host as a tag on a model created by the training pipeline.\nnew mlflow.registry.RegisteredModelTag(\"serving-host\", {\n    name: \"fraud-detector\",\n    key: \"model_serving_host\",\n    value: \"https://ml-fraud-prod.baubap.com\",\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmlflow.registry.RegisteredModelTag(\"serving-host\",\n    name=\"fraud-detector\",\n    key=\"model_serving_host\",\n    value=\"https://ml-fraud-prod.baubap.com\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\n```sh\npulumi import mlflow:registry:RegisteredModelTag serving-host <modelName>/<key>\n```",
+      "properties": {
+        "key": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "name": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "key",
+        "value"
+      ],
+      "inputProperties": {
+        "key": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "name": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "requiredInputs": [
+        "name",
+        "key",
+        "value"
+      ]
     }
   },
   "functions": {

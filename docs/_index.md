@@ -19,7 +19,7 @@ The provider is organized into three modules:
 | Module | Resources | What it manages |
 |---|---|---|
 | `index` (tracking) | `Experiment` | Experiments that group runs and artifacts |
-| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias` | The Model Registry: models, their versions, and deployment aliases |
+| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias`, `RegisteredModelTag` | The Model Registry: models, versions, deployment aliases, and single-tag management |
 | `auth` | `User`, `ExperimentPermission`, `RegisteredModelPermission` | Access control (requires the `mlflow.server.auth` app) |
 
 Each module also ships read-only **functions** (data sources) such as `getRegisteredModel`,

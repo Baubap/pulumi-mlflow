@@ -61,8 +61,14 @@ make test_provider          # hermetic unit tests
 > rebuild after you change Go code. Run the explicit `go build -o bin/...` above (or `rm bin/pulumi-resource-mlflow`
 > first) before regenerating the schema, or you'll generate from a stale binary.
 
-`provider/cmd/pulumi-resource-mlflow/schema.json` is **committed**. CI (`build.yml`) regenerates it and fails on
-drift, so always commit the regenerated schema alongside code changes.
+`provider/cmd/pulumi-resource-mlflow/schema.json` and the generated `sdk/` are **committed**. CI (`build.yml`)
+regenerates the schema and fails on drift, so they must stay in sync with the Go code.
+
+Run **`make install-hooks`** once (needs [lefthook](https://lefthook.dev) — `brew install lefthook`, or
+`go install github.com/evilmartians/lefthook@latest`). It installs a lefthook pre-commit hook (see `lefthook.yml`)
+that regenerates the schema and SDKs and stages them whenever you commit a change to `provider/**.go`, so they
+never drift. The committed SDKs carry a fixed `0.0.0` placeholder version; the real version is injected from the
+git tag at release.
 
 ## Adding a resource
 

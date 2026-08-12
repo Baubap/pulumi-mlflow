@@ -114,7 +114,7 @@ mlflow.registry.RegisteredModelAlias("champion", model_name=model.name, alias="c
 | Module | Resources | Functions (data sources) |
 |---|---|---|
 | `index` (tracking) | `Experiment` | `getExperiment`, `getExperimentByName`, `searchExperiments` |
-| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias` | `getRegisteredModel`, `searchRegisteredModels`, `getLatestVersions`, `getModelVersion`, `searchModelVersions`, `getModelVersionByAlias`, `getModelVersionDownloadUri` |
+| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias`, `RegisteredModelTag` | `getRegisteredModel`, `searchRegisteredModels`, `getLatestVersions`, `getModelVersion`, `searchModelVersions`, `getModelVersionByAlias`, `getModelVersionDownloadUri` |
 | `auth`¹ | `User`, `ExperimentPermission`, `RegisteredModelPermission` | `getUser`, `getExperimentPermission`, `getRegisteredModelPermission` |
 
 ¹ The `auth` resources require the tracking server to run with the `mlflow.server.auth` app enabled.
@@ -130,6 +130,9 @@ runtime (via `GET /version`), not encoded in the provider's semver. Model-versio
 MLflow 3; use `RegisteredModelAlias` instead.
 
 ## Development
+
+See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the full development workflow, project layout, conventions, and how
+to add resources, functions, and docs.
 
 ```bash
 make provider          # build the plugin binary into ./bin

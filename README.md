@@ -114,7 +114,7 @@ mlflow.registry.RegisteredModelAlias("champion", model_name=model.name, alias="c
 | Module | Resources | Functions (data sources) |
 |---|---|---|
 | `index` (tracking) | `Experiment` | `getExperiment`, `getExperimentByName`, `searchExperiments` |
-| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias` | `getRegisteredModel`, `searchRegisteredModels`, `getLatestVersions`, `getModelVersion`, `searchModelVersions`, `getModelVersionByAlias`, `getModelVersionDownloadUri` |
+| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias`, `RegisteredModelTag` | `getRegisteredModel`, `searchRegisteredModels`, `getLatestVersions`, `getModelVersion`, `searchModelVersions`, `getModelVersionByAlias`, `getModelVersionDownloadUri` |
 | `auth`¹ | `User`, `ExperimentPermission`, `RegisteredModelPermission` | `getUser`, `getExperimentPermission`, `getRegisteredModelPermission` |
 
 ¹ The `auth` resources require the tracking server to run with the `mlflow.server.auth` app enabled.

@@ -155,6 +155,12 @@ test_matrix:
 
 # ---- misc --------------------------------------------------------------------
 
+.PHONY: install-hooks
+install-hooks:
+	lefthook install
+	@echo "git hooks installed via lefthook (see lefthook.yml). Requires lefthook:"
+	@echo "  brew install lefthook   # or: go install github.com/evilmartians/lefthook@latest"
+
 .PHONY: lint
 lint:
 	golangci-lint --path-prefix provider --config .golangci.yml run --fix
