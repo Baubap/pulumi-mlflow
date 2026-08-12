@@ -1,0 +1,19 @@
+# Git hooks, managed by lefthook (https://lefthook.dev).
+# Enable once with:  make install-hooks   (runs `lefthook install`)
+pre-commit:
+  commands:
+    regen-schema-sdks:
+      # When provider Go source changes, rebuild the schema + SDKs and stage them
+      # so the committed tree never drifts from the code. SDKs use a fixed 0.0.0
+      # placeholder — the real version is injected from the git tag at release.
+      glob: "provider/**/*.go"
+      exclude: "_test\\.go$"
+      run: |
+        set -euo pipefail
+        export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+        command -v npm >/dev/null 2>&1 && export PATH="$PATH:$(npm root -g)/../bin"
+        go build -o bin/pulumi-resource-mlflow \
+          -ldflags "-X github.com/Baubap/pulumi-mlflow/provider/version.Version=0.0.0" \
+          ./provider/cmd/pulumi-resource-mlflow
+        make generate_schema generate_nodejs generate_python generate_go PROVIDER_VERSION=0.0.0
+        git add provider/cmd/pulumi-resource-mlflow/schema.json sdk/

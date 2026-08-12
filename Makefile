@@ -157,9 +157,9 @@ test_matrix:
 
 .PHONY: install-hooks
 install-hooks:
-	git config core.hooksPath .githooks
-	@echo "git hooks enabled (core.hooksPath=.githooks). The pre-commit hook"
-	@echo "regenerates schema.json + SDKs when provider Go source changes."
+	lefthook install
+	@echo "git hooks installed via lefthook (see lefthook.yml). Requires lefthook:"
+	@echo "  brew install lefthook   # or: go install github.com/evilmartians/lefthook@latest"
 
 .PHONY: lint
 lint:

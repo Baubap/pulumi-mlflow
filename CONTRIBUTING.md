@@ -64,9 +64,11 @@ make test_provider          # hermetic unit tests
 `provider/cmd/pulumi-resource-mlflow/schema.json` and the generated `sdk/` are **committed**. CI (`build.yml`)
 regenerates the schema and fails on drift, so they must stay in sync with the Go code.
 
-Run **`make install-hooks`** once — it enables a pre-commit hook (`.githooks/pre-commit`) that regenerates the
-schema and SDKs and stages them whenever you commit a change to `provider/**.go`, so you never forget. The
-committed SDKs carry a fixed `0.0.0` placeholder version; the real version is injected from the git tag at release.
+Run **`make install-hooks`** once (needs [lefthook](https://lefthook.dev) — `brew install lefthook`, or
+`go install github.com/evilmartians/lefthook@latest`). It installs a lefthook pre-commit hook (see `lefthook.yml`)
+that regenerates the schema and SDKs and stages them whenever you commit a change to `provider/**.go`, so they
+never drift. The committed SDKs carry a fixed `0.0.0` placeholder version; the real version is injected from the
+git tag at release.
 
 ## Adding a resource
 
