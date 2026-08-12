@@ -280,7 +280,9 @@ func waitModelVersionReady(ctx context.Context, api *client.Client, name, versio
 			return dto, nil
 		}
 		if time.Now().After(deadline) {
-			return dto, nil
+			return nil, fmt.Errorf(
+				"model version %s/%s not ready after 60s (status %q); it is still %s",
+				name, version, dto.Status, "PENDING_REGISTRATION")
 		}
 		select {
 		case <-ctx.Done():

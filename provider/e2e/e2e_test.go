@@ -8,8 +8,9 @@
 //
 // It is parametrizable over any number of servers and versions:
 //   - MLFLOW_TRACKING_URIS  comma-separated list of tracking server URIs; every
-//                           scenario runs against each, as a named subtest.
+//     scenario runs against each, as a named subtest.
 //   - MLFLOW_TRACKING_URI   single-server fallback when URIS is unset.
+//
 // Optional auth (applied to all servers): MLFLOW_TRACKING_USERNAME/PASSWORD/TOKEN.
 // Tests skip when no URI is configured.
 //
@@ -19,6 +20,8 @@ package e2e
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/url"
 	"os"
@@ -58,26 +61,35 @@ func serverURIs() []string {
 
 // forEachServer runs body against every configured server as a named subtest,
 // logging each server's reported version. Skips when none are configured.
+//
+// It deliberately never prints the raw tracking URI: this suite can run against
+// internal servers (multi-server mode) and its output may land in CI logs, so
+// servers are identified by index and an opaque hash, never by hostname.
 func forEachServer(t *testing.T, body func(t *testing.T, uri string)) {
 	t.Helper()
 	uris := serverURIs()
 	if len(uris) == 0 {
 		t.Skip("no MLflow server configured; set MLFLOW_TRACKING_URI(S) (or `make mlflow-up`)")
 	}
-	for _, uri := range uris {
-		uri := uri
-		t.Run(subtestName(uri), func(t *testing.T) {
+	for i, uri := range uris {
+		i, uri := i, uri
+		t.Run(subtestName(i), func(t *testing.T) {
 			if v, err := newE2EClient(t, uri).ServerVersion(context.Background()); err == nil && v != "" {
-				t.Logf("MLflow server %s reports version %s", uri, v)
+				t.Logf("MLflow server #%d (%s) reports version %s", i, uriHash(uri), v)
 			}
 			body(t, uri)
 		})
 	}
 }
 
-func subtestName(uri string) string {
-	name := strings.NewReplacer("https://", "", "http://", "", "/", "_", ":", "-").Replace(uri)
-	return strings.Trim(name, "_")
+func subtestName(i int) string { return fmt.Sprintf("server-%d", i) }
+
+// uriHash is a short, non-reversible identifier for a tracking URI, so
+// multi-server runs stay distinguishable in logs without publishing the
+// server's address.
+func uriHash(uri string) string {
+	sum := sha256.Sum256([]byte(uri))
+	return hex.EncodeToString(sum[:])[:8]
 }
 
 func propMap(m map[string]any) property.Map {

@@ -9,7 +9,9 @@ from this repo's committed `schema.json` and `docs/`.
 1. A GitHub Release tagged `vX.Y.Z` exists in `Baubap/pulumi-mlflow` (the schema/API docs are pulled from it).
 2. The per-language SDKs are published (npm, PyPI, Go module tag). See `.github/workflows/release.yml`.
 3. `provider/cmd/pulumi-resource-mlflow/schema.json` is committed and up to date (`make generate_schema`).
-4. `docs/logo.svg` is the final, whitespace-trimmed wordmark (replace the placeholder).
+4. `docs/logo.svg` is a **Baubap-owned, non-trademarked** brand asset. The committed file is a neutral
+   placeholder — do **not** ship MLflow's wordmark/logo (Apache-2.0 grants no trademark rights, and the package
+   is Baubap-published). Replace it with the final Baubap asset before submitting.
 
 ## Submission steps
 

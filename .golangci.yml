@@ -1,0 +1,20 @@
+# golangci-lint v2 configuration. Run with `make lint` or in CI (see build.yml).
+version: "2"
+
+run:
+  build-tags:
+    - e2e
+
+linters:
+  # Keep the default set (errcheck, govet, ineffassign, staticcheck, unused) and
+  # add a few high-signal linters that suit a small, idiomatic provider codebase.
+  enable:
+    - misspell
+    - unconvert
+    - bodyclose
+    - errorlint
+
+formatters:
+  enable:
+    - gofmt
+    - goimports

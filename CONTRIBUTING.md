@@ -176,9 +176,6 @@ New issues land with `needs-triage`. During triage a maintainer confirms/reprodu
 `kind/*` (bug/enhancement) and an `area/*` label (`tracking`, `registry`, `auth`, `provider`, or a 3.x module), and
 sets priority. Good starter issues are tagged `good-first-issue`.
 
-> Labels for this repo are provisioned through the Baubap **infrastructure** (Pulumi) repo, not created by hand —
-> keep the `kind/*` / `area/*` / `needs-triage` / `good-first-issue` taxonomy in sync there.
-
 ## Adding a new module (roadmap work)
 
 Milestone 2 adds MLflow 3.x-only modules (`events`, `genai`, `gateway`). To add one: create `provider/<module>/`

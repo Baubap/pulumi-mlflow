@@ -5,7 +5,7 @@ providerDefaultBranch: main
 publishRegistry: true
 providerVersion: github.com/Baubap/pulumi-mlflow/provider/version.Version
 parallel: 3
-sdkModuleDir: sdk/go/pulumi-mlflow
+sdkModuleDir: sdk/go/mlflow
 languages:
   - nodejs
   - python

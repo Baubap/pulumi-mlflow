@@ -140,9 +140,10 @@ func (Experiment) Read(
 
 	inputs := req.Inputs
 	inputs.Name = dto.Name
-	if tags := client.KVToMap(dto.Tags); tags != nil {
-		inputs.Tags = tags
-	}
+	// Assign unconditionally: when every tag is removed server-side dto.Tags is
+	// empty and KVToMap returns nil, so a guarded assignment would keep a stale
+	// map and hide the deletion from refresh.
+	inputs.Tags = client.KVToMap(dto.Tags)
 	// artifactLocation is echoed from the program input; the server-resolved value
 	// is surfaced via ArtifactUri.
 	return infer.ReadResponse[ExperimentArgs, ExperimentState]{
