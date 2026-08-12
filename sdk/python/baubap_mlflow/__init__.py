@@ -56,7 +56,8 @@ _utilities.register(
   "classes": {
    "mlflow:registry:ModelVersion": "ModelVersion",
    "mlflow:registry:RegisteredModel": "RegisteredModel",
-   "mlflow:registry:RegisteredModelAlias": "RegisteredModelAlias"
+   "mlflow:registry:RegisteredModelAlias": "RegisteredModelAlias",
+   "mlflow:registry:RegisteredModelTag": "RegisteredModelTag"
   }
  }
 ]

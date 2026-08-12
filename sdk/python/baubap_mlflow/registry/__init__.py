@@ -14,6 +14,7 @@ from .get_registered_model import *
 from .model_version import *
 from .registered_model import *
 from .registered_model_alias import *
+from .registered_model_tag import *
 from .search_model_versions import *
 from .search_registered_models import *
 from . import outputs

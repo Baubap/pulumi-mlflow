@@ -42,6 +42,7 @@
         "registry/modelVersion.ts",
         "registry/registeredModel.ts",
         "registry/registeredModelAlias.ts",
+        "registry/registeredModelTag.ts",
         "registry/searchModelVersions.ts",
         "registry/searchRegisteredModels.ts",
         "searchExperiments.ts",

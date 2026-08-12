@@ -27,6 +27,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 		r = &RegisteredModel{}
 	case "mlflow:registry:RegisteredModelAlias":
 		r = &RegisteredModelAlias{}
+	case "mlflow:registry:RegisteredModelTag":
+		r = &RegisteredModelTag{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}

@@ -45,6 +45,11 @@ export type RegisteredModelAlias = import("./registeredModelAlias").RegisteredMo
 export const RegisteredModelAlias: typeof import("./registeredModelAlias").RegisteredModelAlias = null as any;
 utilities.lazyLoad(exports, ["RegisteredModelAlias"], () => require("./registeredModelAlias"));
 
+export { RegisteredModelTagArgs } from "./registeredModelTag";
+export type RegisteredModelTag = import("./registeredModelTag").RegisteredModelTag;
+export const RegisteredModelTag: typeof import("./registeredModelTag").RegisteredModelTag = null as any;
+utilities.lazyLoad(exports, ["RegisteredModelTag"], () => require("./registeredModelTag"));
+
 export { SearchModelVersionsArgs, SearchModelVersionsResult, SearchModelVersionsOutputArgs } from "./searchModelVersions";
 export const searchModelVersions: typeof import("./searchModelVersions").searchModelVersions = null as any;
 export const searchModelVersionsOutput: typeof import("./searchModelVersions").searchModelVersionsOutput = null as any;
@@ -66,6 +71,8 @@ const _module = {
                 return new RegisteredModel(name, <any>undefined, { urn })
             case "mlflow:registry:RegisteredModelAlias":
                 return new RegisteredModelAlias(name, <any>undefined, { urn })
+            case "mlflow:registry:RegisteredModelTag":
+                return new RegisteredModelTag(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }
