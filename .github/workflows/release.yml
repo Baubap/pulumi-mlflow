@@ -16,7 +16,7 @@ jobs:
     name: build provider + schema
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Derive version from tag
         id: version
         uses: pulumi/provider-version-action@v2
@@ -24,19 +24,19 @@ jobs:
           set-env: PROVIDER_VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
           cache: true
-      - uses: pulumi/actions@v6
-      - uses: jaxxstorm/action-install-gh-release@v1
+      - uses: pulumi/actions@v7
+      - uses: jaxxstorm/action-install-gh-release@v3
         with:
           repo: pulumi/pulumictl
       - name: Build provider + schema
         run: make provider generate_schema
       - name: Package provider binary
         run: tar -zcf pulumi-${{ env.PROVIDER }}-provider.tar.gz -C bin pulumi-resource-${{ env.PROVIDER }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: pulumi-${{ env.PROVIDER }}-provider.tar.gz
           path: pulumi-${{ env.PROVIDER }}-provider.tar.gz
@@ -50,26 +50,26 @@ jobs:
       matrix:
         language: [nodejs, python, go]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Derive version from tag
         uses: pulumi/provider-version-action@v2
         with:
           set-env: PROVIDER_VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
           cache: true
-      - uses: pulumi/actions@v6
-      - uses: jaxxstorm/action-install-gh-release@v1
+      - uses: pulumi/actions@v7
+      - uses: jaxxstorm/action-install-gh-release@v3
         with:
           repo: pulumi/pulumictl
       - name: Generate ${{ matrix.language }} SDK
         run: make generate_${{ matrix.language }}
       - name: Package SDK
         run: tar -zcf ${{ matrix.language }}-sdk.tar.gz -C sdk/${{ matrix.language }} .
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.language }}-sdk.tar.gz
           path: ${{ matrix.language }}-sdk.tar.gz
@@ -81,15 +81,15 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
           cache: true
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           version: latest
           args: release --clean --timeout 60m
@@ -101,7 +101,7 @@ jobs:
     needs: publish_plugin
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Derive version from tag
         uses: pulumi/provider-version-action@v2
         with:
@@ -128,11 +128,11 @@ jobs:
       contents: read
     environment: pypi # must match the environment on PyPI's trusted publisher
     steps:
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Download the generated Python SDK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: python-sdk.tar.gz
       - name: Build distributions (wheel + sdist)
@@ -153,7 +153,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Derive version from tag
@@ -163,12 +163,12 @@ jobs:
           set-env: PROVIDER_VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
           cache: true
-      - uses: pulumi/actions@v6
-      - uses: jaxxstorm/action-install-gh-release@v1
+      - uses: pulumi/actions@v7
+      - uses: jaxxstorm/action-install-gh-release@v3
         with:
           repo: pulumi/pulumictl
       - name: Generate Go SDK
