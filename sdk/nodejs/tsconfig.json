@@ -1,0 +1,53 @@
+{
+    "compilerOptions": {
+        // Output
+        "outDir": "bin",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "stripInternal": true,
+        // Environment
+        "target": "ES2022",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "moduleDetection": "force",
+        "types": ["node"],
+        // Type Checking
+        "strict": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "skipLibCheck": true
+    },
+    "files": [
+        "auth/experimentPermission.ts",
+        "auth/getExperimentPermission.ts",
+        "auth/getRegisteredModelPermission.ts",
+        "auth/getUser.ts",
+        "auth/index.ts",
+        "auth/registeredModelPermission.ts",
+        "auth/user.ts",
+        "config/index.ts",
+        "config/vars.ts",
+        "experiment.ts",
+        "getExperiment.ts",
+        "getExperimentByName.ts",
+        "index.ts",
+        "provider.ts",
+        "registry/getLatestVersions.ts",
+        "registry/getModelVersion.ts",
+        "registry/getModelVersionByAlias.ts",
+        "registry/getModelVersionDownloadUri.ts",
+        "registry/getRegisteredModel.ts",
+        "registry/index.ts",
+        "registry/modelVersion.ts",
+        "registry/registeredModel.ts",
+        "registry/registeredModelAlias.ts",
+        "registry/searchModelVersions.ts",
+        "registry/searchRegisteredModels.ts",
+        "searchExperiments.ts",
+        "types/index.ts",
+        "types/input.ts",
+        "types/output.ts",
+        "utilities.ts"
+    ]
+}

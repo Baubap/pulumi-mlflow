@@ -1,0 +1,1223 @@
+{
+  "name": "mlflow",
+  "displayName": "MLflow",
+  "description": "The MLflow provider for Pulumi manages MLflow experiments, model registry entries, and access-control resources through the MLflow REST API. It supports MLflow tracking servers 2.x and 3.x.",
+  "keywords": [
+    "mlflow",
+    "mlops",
+    "machine-learning",
+    "model-registry",
+    "category/infrastructure",
+    "kind/native"
+  ],
+  "homepage": "https://github.com/Baubap/pulumi-mlflow",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/Baubap/pulumi-mlflow",
+  "logoUrl": "https://raw.githubusercontent.com/Baubap/pulumi-mlflow/main/docs/logo.svg",
+  "pluginDownloadURL": "github://api.github.com/Baubap/pulumi-mlflow",
+  "publisher": "Baubap",
+  "namespace": "baubap",
+  "language": {
+    "csharp": {
+      "respectSchemaVersion": true
+    },
+    "go": {
+      "generateResourceContainerTypes": true,
+      "importBasePath": "github.com/Baubap/pulumi-mlflow/sdk/go/mlflow",
+      "respectSchemaVersion": true
+    },
+    "nodejs": {
+      "respectSchemaVersion": true
+    },
+    "python": {
+      "pyproject": {
+        "enabled": true
+      },
+      "respectSchemaVersion": true
+    }
+  },
+  "config": {
+    "variables": {
+      "insecureSkipVerify": {
+        "type": "boolean",
+        "description": "Skip TLS certificate verification when connecting to the tracking server. Not recommended in production."
+      },
+      "password": {
+        "type": "string",
+        "description": "Password for HTTP Basic authentication.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_PASSWORD"
+          ]
+        },
+        "secret": true
+      },
+      "token": {
+        "type": "string",
+        "description": "Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_TOKEN"
+          ]
+        },
+        "secret": true
+      },
+      "trackingUri": {
+        "type": "string",
+        "description": "URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_URI"
+          ]
+        }
+      },
+      "username": {
+        "type": "string",
+        "description": "Username for HTTP Basic authentication against the MLflow tracking server.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_USERNAME"
+          ]
+        }
+      }
+    }
+  },
+  "types": {
+    "mlflow:registry:modelVersionResult": {
+      "properties": {
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "currentStage": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "runId": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "currentStage",
+        "description",
+        "source",
+        "runId",
+        "status",
+        "aliases",
+        "tags"
+      ]
+    },
+    "mlflow:registry:registeredModelResult": {
+      "properties": {
+        "creationTimestamp": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "lastUpdatedTimestamp": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "creationTimestamp",
+        "lastUpdatedTimestamp",
+        "tags"
+      ]
+    },
+    "mlflow:tracking:ExperimentResult": {
+      "properties": {
+        "artifactLocation": {
+          "type": "string"
+        },
+        "experimentId": {
+          "type": "string"
+        },
+        "lifecycleStage": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "type": "object",
+      "required": [
+        "experimentId",
+        "name",
+        "artifactLocation",
+        "lifecycleStage",
+        "tags"
+      ]
+    }
+  },
+  "provider": {
+    "properties": {
+      "insecureSkipVerify": {
+        "type": "boolean",
+        "description": "Skip TLS certificate verification when connecting to the tracking server. Not recommended in production."
+      },
+      "password": {
+        "type": "string",
+        "description": "Password for HTTP Basic authentication.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_PASSWORD"
+          ]
+        },
+        "secret": true
+      },
+      "token": {
+        "type": "string",
+        "description": "Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_TOKEN"
+          ]
+        },
+        "secret": true
+      },
+      "trackingUri": {
+        "type": "string",
+        "description": "URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_URI"
+          ]
+        }
+      },
+      "username": {
+        "type": "string",
+        "description": "Username for HTTP Basic authentication against the MLflow tracking server.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_USERNAME"
+          ]
+        }
+      }
+    },
+    "inputProperties": {
+      "insecureSkipVerify": {
+        "type": "boolean",
+        "description": "Skip TLS certificate verification when connecting to the tracking server. Not recommended in production."
+      },
+      "password": {
+        "type": "string",
+        "description": "Password for HTTP Basic authentication.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_PASSWORD"
+          ]
+        },
+        "secret": true
+      },
+      "token": {
+        "type": "string",
+        "description": "Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_TOKEN"
+          ]
+        },
+        "secret": true
+      },
+      "trackingUri": {
+        "type": "string",
+        "description": "URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_URI"
+          ]
+        }
+      },
+      "username": {
+        "type": "string",
+        "description": "Username for HTTP Basic authentication against the MLflow tracking server.",
+        "default": "",
+        "defaultInfo": {
+          "environment": [
+            "MLFLOW_TRACKING_USERNAME"
+          ]
+        }
+      }
+    }
+  },
+  "resources": {
+    "mlflow:auth:ExperimentPermission": {
+      "description": "Grants a user a permission level on an MLflow experiment. Valid `permission` values are `READ`, `EDIT`, `MANAGE` and `NO_PERMISSIONS`; only `permission` can be updated in place (changing the experiment or user replaces the grant).\n\n> **Requires the MLflow auth app.** These resources call the [MLflow authentication REST API](https://mlflow.org/docs/latest/auth/rest-api.html), which is only available when the tracking server runs with the `mlflow.server.auth` app enabled (e.g. `mlflow server --app-name basic-auth`).\n\n{{% examples %}}\n## Example Usage\n\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst readAccess = new mlflow.auth.ExperimentPermission(\"read-access\", {\n    experimentId: \"0\",\n    username: \"jdoe\",\n    permission: \"READ\",\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nread_access = mlflow.auth.ExperimentPermission(\"read-access\",\n    experiment_id=\"0\",\n    username=\"jdoe\",\n    permission=\"READ\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\n_, err := auth.NewExperimentPermission(ctx, \"read-access\", &auth.ExperimentPermissionArgs{\n    ExperimentId: pulumi.String(\"0\"),\n    Username:     pulumi.String(\"jdoe\"),\n    Permission:   pulumi.String(\"READ\"),\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nImport an existing resource with its id:\n\n```sh\n$ pulumi import mlflow:auth:ExperimentPermission example <experimentId>/<username>\n```\n",
+      "properties": {
+        "experimentId": {
+          "type": "string",
+          "description": "The experiment id. Changing this forces replacement.",
+          "replaceOnChanges": true
+        },
+        "permission": {
+          "type": "string",
+          "description": "The permission level granted: `READ`, `EDIT`, `MANAGE` or `NO_PERMISSIONS`. Updatable in place."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user to grant the permission to. Changing this forces replacement.",
+          "replaceOnChanges": true
+        }
+      },
+      "required": [
+        "experimentId",
+        "username",
+        "permission"
+      ],
+      "inputProperties": {
+        "experimentId": {
+          "type": "string",
+          "description": "The experiment id. Changing this forces replacement.",
+          "replaceOnChanges": true
+        },
+        "permission": {
+          "type": "string",
+          "description": "The permission level granted: `READ`, `EDIT`, `MANAGE` or `NO_PERMISSIONS`. Updatable in place."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user to grant the permission to. Changing this forces replacement.",
+          "replaceOnChanges": true
+        }
+      },
+      "requiredInputs": [
+        "experimentId",
+        "username",
+        "permission"
+      ]
+    },
+    "mlflow:auth:RegisteredModelPermission": {
+      "description": "Grants a user a permission level on an MLflow registered model. Valid `permission` values are `READ`, `EDIT`, `MANAGE` and `NO_PERMISSIONS`; only `permission` can be updated in place (changing the model or user replaces the grant).\n\n> **Requires the MLflow auth app.** These resources call the [MLflow authentication REST API](https://mlflow.org/docs/latest/auth/rest-api.html), which is only available when the tracking server runs with the `mlflow.server.auth` app enabled (e.g. `mlflow server --app-name basic-auth`).\n\n{{% examples %}}\n## Example Usage\n\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst manage = new mlflow.auth.RegisteredModelPermission(\"manage\", {\n    name: \"fraud-detector\",\n    username: \"jdoe\",\n    permission: \"MANAGE\",\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmanage = mlflow.auth.RegisteredModelPermission(\"manage\",\n    name=\"fraud-detector\",\n    username=\"jdoe\",\n    permission=\"MANAGE\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\n_, err := auth.NewRegisteredModelPermission(ctx, \"manage\", &auth.RegisteredModelPermissionArgs{\n    Name:       pulumi.String(\"fraud-detector\"),\n    Username:   pulumi.String(\"jdoe\"),\n    Permission: pulumi.String(\"MANAGE\"),\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nImport an existing resource with its id:\n\n```sh\n$ pulumi import mlflow:auth:RegisteredModelPermission example <name>/<username>\n```\n",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The registered model name. Changing this forces replacement.",
+          "replaceOnChanges": true
+        },
+        "permission": {
+          "type": "string",
+          "description": "The permission level granted: `READ`, `EDIT`, `MANAGE` or `NO_PERMISSIONS`. Updatable in place."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user to grant the permission to. Changing this forces replacement.",
+          "replaceOnChanges": true
+        }
+      },
+      "required": [
+        "name",
+        "username",
+        "permission"
+      ],
+      "inputProperties": {
+        "name": {
+          "type": "string",
+          "description": "The registered model name. Changing this forces replacement.",
+          "replaceOnChanges": true
+        },
+        "permission": {
+          "type": "string",
+          "description": "The permission level granted: `READ`, `EDIT`, `MANAGE` or `NO_PERMISSIONS`. Updatable in place."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user to grant the permission to. Changing this forces replacement.",
+          "replaceOnChanges": true
+        }
+      },
+      "requiredInputs": [
+        "name",
+        "username",
+        "permission"
+      ]
+    },
+    "mlflow:auth:User": {
+      "description": "Manages a user in the MLflow authentication database. The `password` is write-only and is never read back from the server.\n\n> **Requires the MLflow auth app.** These resources call the [MLflow authentication REST API](https://mlflow.org/docs/latest/auth/rest-api.html), which is only available when the tracking server runs with the `mlflow.server.auth` app enabled (e.g. `mlflow server --app-name basic-auth`).\n\n{{% examples %}}\n## Example Usage\n\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst jdoe = new mlflow.auth.User(\"jdoe\", {\n    username: \"jdoe\",\n    password: config.requireSecret(\"jdoePassword\"),\n    isAdmin: false,\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport pulumi\nimport baubap_mlflow as mlflow\n\nconfig = pulumi.Config()\njdoe = mlflow.auth.User(\"jdoe\",\n    username=\"jdoe\",\n    password=config.require_secret(\"jdoePassword\"),\n    is_admin=False)\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\n_, err := auth.NewUser(ctx, \"jdoe\", &auth.UserArgs{\n    Username: pulumi.String(\"jdoe\"),\n    Password: cfg.RequireSecret(\"jdoePassword\"),\n    IsAdmin:  pulumi.Bool(false),\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nImport an existing resource with its id:\n\n```sh\n$ pulumi import mlflow:auth:User example <username>\n```\n",
+      "properties": {
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Whether the user is an administrator (defaults to the server default of false)."
+        },
+        "password": {
+          "type": "string",
+          "description": "The user's password. Write-only; never read back from the server.",
+          "secret": true
+        },
+        "userId": {
+          "type": "string",
+          "description": "The server-assigned numeric user id."
+        },
+        "username": {
+          "type": "string",
+          "description": "The unique username. Changing this forces replacement.",
+          "replaceOnChanges": true
+        }
+      },
+      "required": [
+        "username",
+        "password",
+        "userId"
+      ],
+      "inputProperties": {
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Whether the user is an administrator (defaults to the server default of false)."
+        },
+        "password": {
+          "type": "string",
+          "description": "The user's password. Write-only; never read back from the server.",
+          "secret": true
+        },
+        "username": {
+          "type": "string",
+          "description": "The unique username. Changing this forces replacement.",
+          "replaceOnChanges": true
+        }
+      },
+      "requiredInputs": [
+        "username",
+        "password"
+      ]
+    },
+    "mlflow:index:Experiment": {
+      "description": "Manages an MLflow **experiment** — a named container that groups runs and their artifacts.\n\nBacked by the MLflow [experiments REST API](https://mlflow.org/docs/latest/api_reference/rest-api.html#create-experiment). Works against MLflow tracking servers 2.x and 3.x.\n\n> **Note:** MLflow exposes no `delete-experiment-tag` endpoint, so removing a tag in place is not supported; remove it out of band or recreate the experiment. `artifactLocation` is set once at creation — changing it replaces the experiment.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst experiment = new mlflow.Experiment(\"demo\", {\n    name: \"fraud-detection\",\n    tags: { team: \"foundations\" },\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nexperiment = mlflow.Experiment(\"demo\",\n    name=\"fraud-detection\",\n    tags={\"team\": \"foundations\"})\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\n_, err := mlflow.NewExperiment(ctx, \"demo\", &mlflow.ExperimentArgs{\n    Name: pulumi.String(\"fraud-detection\"),\n    Tags: pulumi.StringMap{\"team\": pulumi.String(\"foundations\")},\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nAn existing experiment can be imported by its server-assigned ID:\n\n```sh\npulumi import mlflow:index:Experiment demo <experiment_id>\n```",
+      "properties": {
+        "artifactLocation": {
+          "type": "string",
+          "description": "Root artifact storage location for the experiment (e.g. an `s3://` URI). Optional — the server assigns a default when omitted. **Immutable:** set once at creation; changing it forces the experiment to be replaced.",
+          "replaceOnChanges": true
+        },
+        "artifactUri": {
+          "type": "string",
+          "description": "Resolved artifact storage location as reported by the tracking server."
+        },
+        "experimentId": {
+          "type": "string",
+          "description": "Server-assigned unique identifier of the experiment."
+        },
+        "lifecycleStage": {
+          "type": "string",
+          "description": "Lifecycle stage of the experiment: \"active\" or \"deleted\"."
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable, unique name of the experiment. Must be unique across active experiments on the tracking server; updating it renames the experiment in place."
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Key/value tags attached to the experiment. Updated in place via `set-experiment-tag`. **Note:** MLflow has no delete-experiment-tag endpoint, so removing a tag in place is not supported."
+        }
+      },
+      "required": [
+        "name",
+        "experimentId",
+        "lifecycleStage",
+        "artifactUri"
+      ],
+      "inputProperties": {
+        "artifactLocation": {
+          "type": "string",
+          "description": "Root artifact storage location for the experiment (e.g. an `s3://` URI). Optional — the server assigns a default when omitted. **Immutable:** set once at creation; changing it forces the experiment to be replaced.",
+          "replaceOnChanges": true
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable, unique name of the experiment. Must be unique across active experiments on the tracking server; updating it renames the experiment in place."
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Key/value tags attached to the experiment. Updated in place via `set-experiment-tag`. **Note:** MLflow has no delete-experiment-tag endpoint, so removing a tag in place is not supported."
+        }
+      },
+      "requiredInputs": [
+        "name"
+      ]
+    },
+    "mlflow:registry:ModelVersion": {
+      "description": "Manages a version of a [registered model](https://mlflow.org/docs/latest/ml/model-registry/) — an immutable snapshot of a model's artifacts.\n\nThe `source`, `runId` and `runLink` are set once: changing any of them replaces the version. Only `description` and `tags` update in place. On create, the provider waits until the version's status is `READY`.\n\n> **Note:** `stage` (None/Staging/Production/Archived) is **deprecated in MLflow 3**. Prefer [`RegisteredModelAlias`](/registry/registeredmodelalias) to drive deployments. Setting `stage` against a 3.x server emits a warning.\n\nREST endpoints: `/api/2.0/mlflow/model-versions/{create,get,update,delete,set-tag,delete-tag,transition-stage}` — see the [MLflow REST API](https://mlflow.org/docs/latest/api_reference/rest-api.html#create-modelversion).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst model = new mlflow.registry.RegisteredModel(\"fraud\", { name: \"fraud-detector\" });\n\nconst v1 = new mlflow.registry.ModelVersion(\"fraud-v1\", {\n    name: model.name,\n    source: \"s3://models/fraud/1\",\n    description: \"First trained version\",\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmodel = mlflow.registry.RegisteredModel(\"fraud\", name=\"fraud-detector\")\n\nv1 = mlflow.registry.ModelVersion(\"fraud-v1\",\n    name=model.name,\n    source=\"s3://models/fraud/1\",\n    description=\"First trained version\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nmodel, _ := registry.NewRegisteredModel(ctx, \"fraud\", &registry.RegisteredModelArgs{\n    Name: pulumi.String(\"fraud-detector\"),\n})\n\nv1, err := registry.NewModelVersion(ctx, \"fraud-v1\", &registry.ModelVersionArgs{\n    Name:        model.Name,\n    Source:      pulumi.String(\"s3://models/fraud/1\"),\n    Description: pulumi.String(\"First trained version\"),\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nModel versions can be imported using `<model-name>/<version>`:\n\n```sh\npulumi import mlflow:registry:ModelVersion fraud-v1 fraud-detector/1\n```\n",
+      "properties": {
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Aliases currently pointing at this version."
+        },
+        "creationTimestamp": {
+          "type": "integer",
+          "description": "Creation time, in epoch milliseconds."
+        },
+        "currentStage": {
+          "type": "string",
+          "description": "The version's current stage (deprecated in MLflow 3; prefer aliases)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional human-readable description. Updated in place."
+        },
+        "lastUpdatedTimestamp": {
+          "type": "integer",
+          "description": "Last update time, in epoch milliseconds."
+        },
+        "name": {
+          "type": "string",
+          "description": "Parent registered model name. Changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "runId": {
+          "type": "string",
+          "description": "Optional MLflow run that produced the model. Changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "runLink": {
+          "type": "string",
+          "description": "Optional link to the source run. Changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "source": {
+          "type": "string",
+          "description": "URI of the model artifacts (e.g. an s3:// path). Set once; changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "stage": {
+          "type": "string",
+          "description": "Deprecated model stage (None/Staging/Production/Archived). Prefer RegisteredModelAlias; setting this on MLflow 3 emits a warning.",
+          "deprecationMessage": "Model stages are deprecated in MLflow 3. Use RegisteredModelAlias instead."
+        },
+        "status": {
+          "type": "string",
+          "description": "Registration status; the provider waits for READY on create."
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional key/value metadata tags. Synced in place."
+        },
+        "version": {
+          "type": "string",
+          "description": "Server-assigned version number (immutable)."
+        }
+      },
+      "required": [
+        "name",
+        "source",
+        "version",
+        "currentStage",
+        "status",
+        "creationTimestamp",
+        "lastUpdatedTimestamp"
+      ],
+      "inputProperties": {
+        "description": {
+          "type": "string",
+          "description": "Optional human-readable description. Updated in place."
+        },
+        "name": {
+          "type": "string",
+          "description": "Parent registered model name. Changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "runId": {
+          "type": "string",
+          "description": "Optional MLflow run that produced the model. Changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "runLink": {
+          "type": "string",
+          "description": "Optional link to the source run. Changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "source": {
+          "type": "string",
+          "description": "URI of the model artifacts (e.g. an s3:// path). Set once; changing it replaces the version.",
+          "replaceOnChanges": true
+        },
+        "stage": {
+          "type": "string",
+          "description": "Deprecated model stage (None/Staging/Production/Archived). Prefer RegisteredModelAlias; setting this on MLflow 3 emits a warning.",
+          "deprecationMessage": "Model stages are deprecated in MLflow 3. Use RegisteredModelAlias instead."
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional key/value metadata tags. Synced in place."
+        }
+      },
+      "requiredInputs": [
+        "name",
+        "source"
+      ]
+    },
+    "mlflow:registry:RegisteredModel": {
+      "description": "Manages a model in the [MLflow Model Registry](https://mlflow.org/docs/latest/ml/model-registry/) — a named container that groups the versions of a model.\n\nThe model `name` is the resource identity; changing it replaces the resource. Only `description` and `tags` are updated in place.\n\nREST endpoints: `/api/2.0/mlflow/registered-models/{create,get,update,delete,set-tag,delete-tag}` — see the [MLflow REST API](https://mlflow.org/docs/latest/api_reference/rest-api.html#create-registeredmodel).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst model = new mlflow.registry.RegisteredModel(\"fraud\", {\n    name: \"fraud-detector\",\n    description: \"Gradient-boosted fraud model\",\n    tags: { owner: \"foundations\" },\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmodel = mlflow.registry.RegisteredModel(\"fraud\",\n    name=\"fraud-detector\",\n    description=\"Gradient-boosted fraud model\",\n    tags={\"owner\": \"foundations\"})\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nmodel, err := registry.NewRegisteredModel(ctx, \"fraud\", &registry.RegisteredModelArgs{\n    Name:        pulumi.String(\"fraud-detector\"),\n    Description: pulumi.String(\"Gradient-boosted fraud model\"),\n    Tags:        pulumi.StringMap{\"owner\": pulumi.String(\"foundations\")},\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nRegistered models can be imported using the model name:\n\n```sh\npulumi import mlflow:registry:RegisteredModel fraud fraud-detector\n```\n",
+      "properties": {
+        "creationTimestamp": {
+          "type": "integer",
+          "description": "Model creation time, in epoch milliseconds."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional human-readable description. Updated in place."
+        },
+        "lastUpdatedTimestamp": {
+          "type": "integer",
+          "description": "Last update time, in epoch milliseconds."
+        },
+        "name": {
+          "type": "string",
+          "description": "Unique name of the registered model. This is the resource identity; changing it replaces the resource.",
+          "replaceOnChanges": true
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional key/value metadata tags. Synced in place via set-tag/delete-tag."
+        }
+      },
+      "required": [
+        "name",
+        "creationTimestamp",
+        "lastUpdatedTimestamp"
+      ],
+      "inputProperties": {
+        "description": {
+          "type": "string",
+          "description": "Optional human-readable description. Updated in place."
+        },
+        "name": {
+          "type": "string",
+          "description": "Unique name of the registered model. This is the resource identity; changing it replaces the resource.",
+          "replaceOnChanges": true
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional key/value metadata tags. Synced in place via set-tag/delete-tag."
+        }
+      },
+      "requiredInputs": [
+        "name"
+      ]
+    },
+    "mlflow:registry:RegisteredModelAlias": {
+      "description": "Manages a named [alias](https://mlflow.org/docs/latest/ml/model-registry/#deploy-and-organize-models-with-aliases-and-tags) on a registered model that points at a specific version (for example `champion` → version 3).\n\nAliases are mutable pointers and are the **recommended** way to drive deployments; they supersede the deprecated model *stages*. `version` is updatable — changing it re-points the alias to a different version — while `modelName` and `alias` changes replace the resource.\n\nREST endpoints: `/api/2.0/mlflow/registered-models/alias` (set/delete/get) — see the [MLflow REST API](https://mlflow.org/docs/latest/api_reference/rest-api.html#set-registered-model-alias).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\n// Point the \"champion\" alias at a model version to promote it.\nnew mlflow.registry.RegisteredModelAlias(\"champion\", {\n    modelName: \"fraud-detector\",\n    alias: \"champion\",\n    version: \"3\",\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\n# Point the \"champion\" alias at a model version to promote it.\nmlflow.registry.RegisteredModelAlias(\"champion\",\n    model_name=\"fraud-detector\",\n    alias=\"champion\",\n    version=\"3\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\n_, err := registry.NewRegisteredModelAlias(ctx, \"champion\", &registry.RegisteredModelAliasArgs{\n    ModelName: pulumi.String(\"fraud-detector\"),\n    Alias:     pulumi.String(\"champion\"),\n    Version:   pulumi.String(\"3\"),\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nAliases can be imported using `<model-name>/<alias>`:\n\n```sh\npulumi import mlflow:registry:RegisteredModelAlias champion fraud-detector/champion\n```\n",
+      "properties": {
+        "alias": {
+          "type": "string",
+          "description": "Alias name, e.g. \"champion\". Changing it replaces the resource.",
+          "replaceOnChanges": true
+        },
+        "modelName": {
+          "type": "string",
+          "description": "Registered model the alias belongs to. Changing it replaces the resource.",
+          "replaceOnChanges": true
+        },
+        "version": {
+          "type": "string",
+          "description": "Model version the alias points at. Updating it re-points the alias in place."
+        }
+      },
+      "required": [
+        "modelName",
+        "alias",
+        "version"
+      ],
+      "inputProperties": {
+        "alias": {
+          "type": "string",
+          "description": "Alias name, e.g. \"champion\". Changing it replaces the resource.",
+          "replaceOnChanges": true
+        },
+        "modelName": {
+          "type": "string",
+          "description": "Registered model the alias belongs to. Changing it replaces the resource.",
+          "replaceOnChanges": true
+        },
+        "version": {
+          "type": "string",
+          "description": "Model version the alias points at. Updating it re-points the alias in place."
+        }
+      },
+      "requiredInputs": [
+        "modelName",
+        "alias",
+        "version"
+      ]
+    }
+  },
+  "functions": {
+    "mlflow:auth:getExperimentPermission": {
+      "description": "Returns the permission level a user has on an MLflow experiment.\n\n> **Requires the MLflow auth app.** These resources call the [MLflow authentication REST API](https://mlflow.org/docs/latest/auth/rest-api.html), which is only available when the tracking server runs with the `mlflow.server.auth` app enabled (e.g. `mlflow server --app-name basic-auth`).\n\n{{% examples %}}\n## Example Usage\n\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst perm = mlflow.auth.getExperimentPermission({ experimentId: \"0\", username: \"jdoe\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nperm = mlflow.auth.get_experiment_permission(experiment_id=\"0\", username=\"jdoe\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nperm, err := auth.GetExperimentPermission(ctx, &auth.GetExperimentPermissionArgs{\n    ExperimentId: \"0\",\n    Username:     \"jdoe\",\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "experimentId": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "experimentId",
+          "username"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "permission": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "permission"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:auth:getRegisteredModelPermission": {
+      "description": "Returns the permission level a user has on an MLflow registered model.\n\n> **Requires the MLflow auth app.** These resources call the [MLflow authentication REST API](https://mlflow.org/docs/latest/auth/rest-api.html), which is only available when the tracking server runs with the `mlflow.server.auth` app enabled (e.g. `mlflow server --app-name basic-auth`).\n\n{{% examples %}}\n## Example Usage\n\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst perm = mlflow.auth.getRegisteredModelPermission({ name: \"fraud-detector\", username: \"jdoe\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nperm = mlflow.auth.get_registered_model_permission(name=\"fraud-detector\", username=\"jdoe\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nperm, err := auth.GetRegisteredModelPermission(ctx, &auth.GetRegisteredModelPermissionArgs{\n    Name:     \"fraud-detector\",\n    Username: \"jdoe\",\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "username"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "permission": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "permission"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:auth:getUser": {
+      "description": "Looks up an MLflow user by username, returning its admin flag and id.\n\n> **Requires the MLflow auth app.** These resources call the [MLflow authentication REST API](https://mlflow.org/docs/latest/auth/rest-api.html), which is only available when the tracking server runs with the `mlflow.server.auth` app enabled (e.g. `mlflow server --app-name basic-auth`).\n\n{{% examples %}}\n## Example Usage\n\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst jdoe = mlflow.auth.getUser({ username: \"jdoe\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\njdoe = mlflow.auth.get_user(username=\"jdoe\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\njdoe, err := auth.GetUser(ctx, &auth.GetUserArgs{Username: \"jdoe\"})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "isAdmin": {
+            "type": "boolean"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "isAdmin",
+          "userId"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:index:getExperiment": {
+      "description": "Looks up an existing MLflow experiment by its server-assigned ID. Wraps [`experiments/get`](https://mlflow.org/docs/latest/api_reference/rest-api.html#get-experiment).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst exp = await mlflow.getExperiment({ experimentId: \"123\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nexp = mlflow.get_experiment(experiment_id=\"123\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nexp, err := mlflow.GetExperiment(ctx, &mlflow.GetExperimentArgs{ExperimentId: \"123\"}, nil)\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}",
+      "inputs": {
+        "properties": {
+          "experimentId": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "experimentId"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "artifactLocation": {
+            "type": "string"
+          },
+          "experimentId": {
+            "type": "string"
+          },
+          "lifecycleStage": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "experimentId",
+          "name",
+          "artifactLocation",
+          "lifecycleStage",
+          "tags"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:index:getExperimentByName": {
+      "description": "Looks up an existing MLflow experiment by its unique name. Wraps [`experiments/get-by-name`](https://mlflow.org/docs/latest/api_reference/rest-api.html#get-experiment-by-name).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst exp = await mlflow.getExperimentByName({ name: \"fraud-detection\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nexp = mlflow.get_experiment_by_name(name=\"fraud-detection\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nexp, err := mlflow.GetExperimentByName(ctx, &mlflow.GetExperimentByNameArgs{Name: \"fraud-detection\"}, nil)\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}",
+      "inputs": {
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "artifactLocation": {
+            "type": "string"
+          },
+          "experimentId": {
+            "type": "string"
+          },
+          "lifecycleStage": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "experimentId",
+          "name",
+          "artifactLocation",
+          "lifecycleStage",
+          "tags"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:index:searchExperiments": {
+      "description": "Searches MLflow experiments with an optional filter expression. Wraps [`experiments/search`](https://mlflow.org/docs/latest/api_reference/rest-api.html#search-experiments).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst results = await mlflow.searchExperiments({ filter: \"tags.team = 'foundations'\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nresults = mlflow.search_experiments(filter=\"tags.team = 'foundations'\")\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nresults, err := mlflow.SearchExperiments(ctx, &mlflow.SearchExperimentsArgs{Filter: pulumi.StringRef(\"tags.team = 'foundations'\")}, nil)\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}",
+      "inputs": {
+        "properties": {
+          "filter": {
+            "type": "string"
+          },
+          "maxResults": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "outputs": {
+        "properties": {
+          "experiments": {
+            "items": {
+              "$ref": "#/types/mlflow:tracking:ExperimentResult"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "experiments"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:registry:getLatestVersions": {
+      "description": "Returns the latest version of a registered model per stage (or overall).\n\nREST: `/api/2.0/mlflow/registered-models/get-latest-versions`.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst latest = mlflow.registry.getLatestVersions({ name: \"fraud-detector\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nlatest = mlflow.registry.get_latest_versions(name=\"fraud-detector\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "modelVersions": {
+            "items": {
+              "$ref": "#/types/mlflow:registry:modelVersionResult"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "modelVersions"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:registry:getModelVersion": {
+      "description": "Looks up a specific model version by model name and version number.\n\nREST: `/api/2.0/mlflow/model-versions/get`.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst mv = mlflow.registry.getModelVersion({ name: \"fraud-detector\", version: \"1\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmv = mlflow.registry.get_model_version(name=\"fraud-detector\", version=\"1\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "version"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "currentStage": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "currentStage",
+          "description",
+          "source",
+          "runId",
+          "status",
+          "aliases",
+          "tags"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:registry:getModelVersionByAlias": {
+      "description": "Resolves an alias on a registered model to the model version it currently points at — useful for reading which version is, for example, `champion`.\n\nREST: `/api/2.0/mlflow/registered-models/alias` (get).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst champion = mlflow.registry.getModelVersionByAlias({ name: \"fraud-detector\", alias: \"champion\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nchampion = mlflow.registry.get_model_version_by_alias(name=\"fraud-detector\", alias=\"champion\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "alias"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "currentStage": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "runId": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "currentStage",
+          "description",
+          "source",
+          "runId",
+          "status",
+          "aliases",
+          "tags"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:registry:getModelVersionDownloadUri": {
+      "description": "Returns the artifact download URI for a model version.\n\nREST: `/api/2.0/mlflow/model-versions/get-download-uri`.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst uri = mlflow.registry.getModelVersionDownloadUri({ name: \"fraud-detector\", version: \"1\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nuri = mlflow.registry.get_model_version_download_uri(name=\"fraud-detector\", version=\"1\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "version"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "artifactUri": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifactUri"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:registry:getRegisteredModel": {
+      "description": "Looks up a registered model in the [Model Registry](https://mlflow.org/docs/latest/ml/model-registry/) by name.\n\nREST: `/api/2.0/mlflow/registered-models/get`.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst model = mlflow.registry.getRegisteredModel({ name: \"fraud-detector\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmodel = mlflow.registry.get_registered_model(name=\"fraud-detector\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ]
+      },
+      "outputs": {
+        "properties": {
+          "creationTimestamp": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "lastUpdatedTimestamp": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "creationTimestamp",
+          "lastUpdatedTimestamp",
+          "tags"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:registry:searchModelVersions": {
+      "description": "Searches model versions with an optional MLflow filter string.\n\nREST: `/api/2.0/mlflow/model-versions/search`.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst versions = mlflow.registry.searchModelVersions({ filter: \"name='fraud-detector'\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nversions = mlflow.registry.search_model_versions(filter=\"name='fraud-detector'\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "filter": {
+            "type": "string"
+          },
+          "maxResults": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "outputs": {
+        "properties": {
+          "modelVersions": {
+            "items": {
+              "$ref": "#/types/mlflow:registry:modelVersionResult"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "modelVersions"
+        ],
+        "type": "object"
+      }
+    },
+    "mlflow:registry:searchRegisteredModels": {
+      "description": "Searches registered models with an optional MLflow [filter string](https://mlflow.org/docs/latest/api_reference/rest-api.html#search-registeredmodels).\n\nREST: `/api/2.0/mlflow/registered-models/search`.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst models = mlflow.registry.searchRegisteredModels({ filter: \"name LIKE 'fraud%'\" });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmodels = mlflow.registry.search_registered_models(filter=\"name LIKE 'fraud%'\")\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n",
+      "inputs": {
+        "properties": {
+          "filter": {
+            "type": "string"
+          },
+          "maxResults": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "outputs": {
+        "properties": {
+          "registeredModels": {
+            "items": {
+              "$ref": "#/types/mlflow:registry:registeredModelResult"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "registeredModels"
+        ],
+        "type": "object"
+      }
+    }
+  }
+}

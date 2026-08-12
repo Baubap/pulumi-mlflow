@@ -131,9 +131,6 @@ MLflow 3; use `RegisteredModelAlias` instead.
 
 ## Development
 
-See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the full development workflow, project layout, conventions, and how
-to add resources, functions, and docs.
-
 ```bash
 make provider          # build the plugin binary into ./bin
 make generate_schema   # regenerate provider/cmd/pulumi-resource-mlflow/schema.json
