@@ -77,8 +77,8 @@ jobs:
     env:
       MLFLOW_TRACKING_URI: http://localhost:5000
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
           cache: true
@@ -121,8 +121,8 @@ jobs:
     env:
       MLFLOW_TRACKING_URIS: ${{ needs.config.outputs.uris }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
           cache: true

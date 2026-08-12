@@ -20,15 +20,15 @@ jobs:
     name: continuous-integration
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
           cache: true
       - name: Install pulumi CLI
-        uses: pulumi/actions@v6
+        uses: pulumi/actions@v7
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1
+        uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: pulumi/pulumictl
       - name: Build provider
@@ -48,16 +48,16 @@ jobs:
     if: github.event_name == 'pull_request'
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
           cache: true
-      - uses: pulumi/actions@v6
+      - uses: pulumi/actions@v7
       - name: Install schema-tools
-        uses: jaxxstorm/action-install-gh-release@v1
+        uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: pulumi/schema-tools
       - name: Build provider + schema
