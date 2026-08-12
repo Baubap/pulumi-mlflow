@@ -68,11 +68,13 @@ jobs:
       - name: Generate ${{ matrix.language }} SDK
         run: make generate_${{ matrix.language }}
       - name: Package SDK
-        run: tar -zcf ${{ matrix.language }}-sdk.tar.gz -C sdk/${{ matrix.language }} .
+        # The file inside the artifact must be <lang>.tar.gz — pulumi-package-publisher
+        # (and publish_python) extract sdk/<lang>.tar.gz after download.
+        run: tar -zcf ${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }} .
       - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.language }}-sdk.tar.gz
-          path: ${{ matrix.language }}-sdk.tar.gz
+          path: ${{ matrix.language }}.tar.gz
 
   publish_plugin:
     name: publish plugin binaries (GitHub Release)
@@ -138,7 +140,7 @@ jobs:
       - name: Build distributions (wheel + sdist)
         run: |
           mkdir -p sdk/python
-          tar -xzf python-sdk.tar.gz -C sdk/python
+          tar -xzf python.tar.gz -C sdk/python
           python -m pip install --upgrade build
           python -m build --outdir dist sdk/python
       - name: Publish to PyPI via OIDC
@@ -171,18 +173,14 @@ jobs:
       - uses: jaxxstorm/action-install-gh-release@v3.0.0
         with:
           repo: pulumi/pulumictl
-      - name: Generate Go SDK
-        run: make generate_go
-      - name: Publish Go SDK
-        uses: pulumi/publish-go-sdk-action@v1
-        with:
-          repository: ${{ github.repository }}
-          base-ref: ${{ github.sha }}
-          source: sdk
-          path: sdk
-          version: ${{ env.PROVIDER_VERSION }}
-          additive-import-path: github.com/Baubap/pulumi-mlflow/sdk
-          files: |
-            go/**
+      - name: Tag the Go SDK submodule
+        # The Go SDK is committed at sdk/go/mlflow (module
+        # github.com/Baubap/pulumi-mlflow/sdk/go/mlflow). Go resolves a module in a
+        # subdirectory via a `<subdir>/vX.Y.Z` tag, so publish it by tagging the
+        # release commit as sdk/go/mlflow/vX.Y.Z.
+        run: |
+          TAG="sdk/go/mlflow/v${PROVIDER_VERSION}"
+          git tag "$TAG" "$GITHUB_SHA"
+          git push origin "$TAG"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
