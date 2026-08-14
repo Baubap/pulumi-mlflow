@@ -149,6 +149,8 @@ deprecated field (for example, `ModelVersion.stage` on a 3.x server).
 ## Guides
 
 - [Promote a model with aliases](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/promote-model-with-aliases.md) — blue/green model rollouts using `champion`/`challenger` aliases.
+- [Register a model from an existing experiment](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/register-model-from-existing-experiment.md) — reference an experiment with a data source and build the registry entry around it.
+- [Tag a model you don't own](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/tag-existing-registry-entities.md) — attach a single governance tag (e.g. the serving host) to an externally-owned model with `RegisteredModelTag`.
 - [Set up access control](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/access-control.md) — manage users and per-experiment / per-model permissions.
 
 ## Importing existing resources
