@@ -1,8 +1,9 @@
 name: build
 on:
+  # No path filter on pull_request: `continuous-integration` is a required status
+  # check, and a filtered-out workflow never reports it, which blocks docs-only
+  # PRs ("Expected — waiting for status"). The build is cheap, so always run it.
   pull_request:
-    paths-ignore:
-      - "**.md"
   push:
     branches:
       - main
