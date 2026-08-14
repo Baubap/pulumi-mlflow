@@ -15,7 +15,7 @@ env:
 
 jobs:
   # Job name is "continuous-integration" so it reports the status-check context
-  # required by the repo's `main` branch protection (Baubap default).
+  # required by this repo's `main` branch-protection rule.
   build_test:
     name: continuous-integration
     runs-on: ubuntu-latest
@@ -41,6 +41,20 @@ jobs:
         run: make generate_schema
       - name: Fail if schema.json is stale (run `make generate_schema` and commit)
         run: git diff --exit-code -- provider/cmd/pulumi-resource-mlflow/schema.json
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GOVERSION }}
+          cache: true
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.12.2
 
   schema_check:
     name: schema breaking-change check

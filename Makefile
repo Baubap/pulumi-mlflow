@@ -163,7 +163,7 @@ install-hooks:
 
 .PHONY: lint
 lint:
-	golangci-lint --path-prefix provider --config .golangci.yml run --fix
+	golangci-lint run --fix   # config: .golangci.yml (auto-discovered)
 
 .PHONY: ci-mgmt
 ci-mgmt: .ci-mgmt.yaml

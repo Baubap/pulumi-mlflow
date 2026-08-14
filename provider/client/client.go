@@ -29,9 +29,9 @@ type Client struct {
 	password   string
 	token      string
 
-	versionOnce sync.Once
+	versionMu   sync.Mutex
 	version     string
-	versionErr  error
+	versionDone bool // set once a definitive answer was obtained; only transient failures are retried
 }
 
 func newHTTPClient(insecure bool) *http.Client {
@@ -139,29 +139,39 @@ func parseAPIError(status int, data []byte) error {
 }
 
 // ServerVersion returns the MLflow server version via GET {trackingUri}/version.
-// The result is cached. It returns an empty string if the endpoint is unavailable
-// (older servers or backends that do not expose it), which callers treat as
-// "assume 2.x-compatible".
+// It returns an empty string when the endpoint is unavailable (older servers or
+// backends that do not expose it), which callers treat as "assume 2.x-compatible".
+//
+// A definitive answer — a 200 (with the version) or any other HTTP response
+// (endpoint absent → empty) — is cached for the lifetime of the client. A
+// transient failure (e.g. the request never reached the server) is NOT cached
+// and returns an error, so a later call retries rather than permanently
+// degrading version detection.
 func (c *Client) ServerVersion(ctx context.Context) (string, error) {
-	c.versionOnce.Do(func() {
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/version", nil)
-		if err != nil {
-			c.versionErr = err
-			return
-		}
-		c.authenticate(req)
-		resp, err := c.httpClient.Do(req)
-		if err != nil {
-			c.versionErr = err
-			return
-		}
-		defer func() { _ = resp.Body.Close() }()
-		data, _ := io.ReadAll(resp.Body)
-		if resp.StatusCode == http.StatusOK {
-			c.version = strings.TrimSpace(string(data))
-		}
-	})
-	return c.version, c.versionErr
+	c.versionMu.Lock()
+	defer c.versionMu.Unlock()
+	if c.versionDone {
+		return c.version, nil
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/version", nil)
+	if err != nil {
+		return "", err
+	}
+	c.authenticate(req)
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		// Transient: the call didn't complete. Don't cache — retry next time.
+		return "", fmt.Errorf("mlflow GET /version: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+	data, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode == http.StatusOK {
+		c.version = strings.TrimSpace(string(data))
+	}
+	// A non-200 means the server has no /version endpoint (older release); that
+	// is a definitive "assume 2.x" answer, so cache it alongside a real version.
+	c.versionDone = true
+	return c.version, nil
 }
 
 // ServerMajorVersion returns the MLflow server major version (e.g. 2 or 3), or 0
