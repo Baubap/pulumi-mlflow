@@ -12,6 +12,7 @@ func Resources() []infer.InferredResource {
 		infer.Resource(ModelVersion{}),
 		infer.Resource(RegisteredModelAlias{}),
 		infer.Resource(RegisteredModelTag{}),
+		infer.Resource(ModelVersionPromotion{}),
 	}
 }
 

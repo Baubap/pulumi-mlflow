@@ -23,6 +23,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 	switch typ {
 	case "mlflow:registry:ModelVersion":
 		r = &ModelVersion{}
+	case "mlflow:registry:ModelVersionPromotion":
+		r = &ModelVersionPromotion{}
 	case "mlflow:registry:RegisteredModel":
 		r = &RegisteredModel{}
 	case "mlflow:registry:RegisteredModelAlias":

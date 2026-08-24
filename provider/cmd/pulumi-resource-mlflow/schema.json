@@ -613,6 +613,81 @@
         "source"
       ]
     },
+    "mlflow:registry:ModelVersionPromotion": {
+      "description": "Copies a model version from one MLflow tracking server to another (e.g. testing -> production), **including its artifacts**, so the destination is self-contained: deleting the source can never break the destination. Metadata (experiment, run, model version) is replicated over the MLflow REST API; artifact bytes are copied by a scheme-aware backend (`s3://` directly via the AWS SDK — the process needs credentials to both stores; `mlflow-artifacts:/` proxied through the server, no credentials). The destination version number is assigned by the destination registry and returned as `destVersion` — point a `RegisteredModelAlias` at it to promote.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst prod = new mlflow.Provider(\"prod\", { trackingUri: \"https://mlflow-prod.example.com\" });\n\nconst promoted = new mlflow.registry.ModelVersionPromotion(\"fraud-v3\", {\n    sourceTrackingUri: \"https://mlflow-test.example.com\",\n    sourceName: \"fraud-detector\",\n    sourceVersion: \"3\",\n}, { provider: prod });\n\nnew mlflow.registry.RegisteredModelAlias(\"fraud-prod\", {\n    modelName: \"fraud-detector\", alias: \"production\", version: promoted.destVersion,\n}, { provider: prod });\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nprod = mlflow.Provider(\"prod\", tracking_uri=\"https://mlflow-prod.example.com\")\n\npromoted = mlflow.registry.ModelVersionPromotion(\"fraud-v3\",\n    source_tracking_uri=\"https://mlflow-test.example.com\",\n    source_name=\"fraud-detector\",\n    source_version=\"3\",\n    opts=pulumi.ResourceOptions(provider=prod))\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}",
+      "properties": {
+        "copyRunData": {
+          "type": "boolean"
+        },
+        "destExperiment": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "destName": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "destRunId": {
+          "type": "string"
+        },
+        "destSource": {
+          "type": "string"
+        },
+        "destVersion": {
+          "type": "string"
+        },
+        "sourceName": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "sourceTrackingUri": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "sourceVersion": {
+          "type": "string",
+          "replaceOnChanges": true
+        }
+      },
+      "required": [
+        "sourceTrackingUri",
+        "sourceName",
+        "sourceVersion",
+        "destVersion",
+        "destRunId",
+        "destSource"
+      ],
+      "inputProperties": {
+        "copyRunData": {
+          "type": "boolean"
+        },
+        "destExperiment": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "destName": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "sourceName": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "sourceTrackingUri": {
+          "type": "string",
+          "replaceOnChanges": true
+        },
+        "sourceVersion": {
+          "type": "string",
+          "replaceOnChanges": true
+        }
+      },
+      "requiredInputs": [
+        "sourceTrackingUri",
+        "sourceName",
+        "sourceVersion"
+      ]
+    },
     "mlflow:registry:RegisteredModel": {
       "description": "Manages a model in the [MLflow Model Registry](https://mlflow.org/docs/latest/ml/model-registry/) — a named container that groups the versions of a model.\n\nThe model `name` is the resource identity; changing it replaces the resource. Only `description` and `tags` are updated in place.\n\nREST endpoints: `/api/2.0/mlflow/registered-models/{create,get,update,delete,set-tag,delete-tag}` — see the [MLflow REST API](https://mlflow.org/docs/latest/api_reference/rest-api.html#create-registeredmodel).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n{{< chooser language \"typescript,python,go\" >}}\n{{% choosable language typescript %}}\n```typescript\nimport * as mlflow from \"@baubap/mlflow\";\n\nconst model = new mlflow.registry.RegisteredModel(\"fraud\", {\n    name: \"fraud-detector\",\n    description: \"Gradient-boosted fraud model\",\n    tags: { owner: \"foundations\" },\n});\n```\n{{% /choosable %}}\n{{% choosable language python %}}\n```python\nimport baubap_mlflow as mlflow\n\nmodel = mlflow.registry.RegisteredModel(\"fraud\",\n    name=\"fraud-detector\",\n    description=\"Gradient-boosted fraud model\",\n    tags={\"owner\": \"foundations\"})\n```\n{{% /choosable %}}\n{{% choosable language go %}}\n```go\nmodel, err := registry.NewRegisteredModel(ctx, \"fraud\", &registry.RegisteredModelArgs{\n    Name:        pulumi.String(\"fraud-detector\"),\n    Description: pulumi.String(\"Gradient-boosted fraud model\"),\n    Tags:        pulumi.StringMap{\"owner\": pulumi.String(\"foundations\")},\n})\n```\n{{% /choosable %}}\n{{< /chooser >}}\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nRegistered models can be imported using the model name:\n\n```sh\npulumi import mlflow:registry:RegisteredModel fraud fraud-detector\n```\n",
       "properties": {
