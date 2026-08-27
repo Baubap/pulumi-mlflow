@@ -153,6 +153,30 @@ test_matrix:
 		test $$status -eq 0 || exit $$status; \
 	done
 
+# ---- ModelVersionPromotion e2e (two servers + MinIO) -------------------------
+COMPOSE_PROMO := provider/e2e/docker-compose.promotion.yml
+
+.PHONY: promo-up promo-down test_e2e_promotion
+promo-up:
+	docker compose -f $(COMPOSE_PROMO) up -d
+	@echo "waiting for source (5001) + dest (5002) MLflow ..."; \
+	for i in $$(seq 1 40); do \
+		curl -sf http://localhost:5001/health >/dev/null 2>&1 && \
+		curl -sf http://localhost:5002/health >/dev/null 2>&1 && echo "ready" && exit 0; \
+		sleep 2; \
+	done; \
+	echo "servers did not become ready"; docker compose -f $(COMPOSE_PROMO) logs; exit 1
+
+promo-down:
+	-docker compose -f $(COMPOSE_PROMO) down -v
+
+# Cross-server promotion e2e against the pair from `promo-up` (bytes go via MinIO).
+test_e2e_promotion:
+	MLFLOW_SOURCE_URI=http://localhost:5001 MLFLOW_DEST_URI=http://localhost:5002 \
+	AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin AWS_REGION=us-east-1 \
+	AWS_ENDPOINT_URL_S3=http://localhost:9000 AWS_S3_FORCE_PATH_STYLE=true \
+	go test -v -count=1 -tags=e2e -timeout 20m -run TestModelVersionPromotionE2E ./provider/e2e/...
+
 # ---- misc --------------------------------------------------------------------
 
 .PHONY: install-hooks

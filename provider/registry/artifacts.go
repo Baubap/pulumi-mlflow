@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"os"
 	"strings"
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
@@ -70,7 +71,14 @@ func copyArtifactsS3(ctx context.Context, srcURI, dstURI string) error {
 	if err != nil {
 		return fmt.Errorf("loading AWS config: %w", err)
 	}
-	s3c := s3.NewFromConfig(cfg)
+	// A custom endpoint (AWS_ENDPOINT_URL_S3) is honored by LoadDefaultConfig; for
+	// S3-compatible stores like MinIO/LocalStack used in e2e, path-style addressing
+	// is also required — opt in via AWS_S3_FORCE_PATH_STYLE=true. No effect on real S3.
+	s3c := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		if os.Getenv("AWS_S3_FORCE_PATH_STYLE") == "true" {
+			o.UsePathStyle = true
+		}
+	})
 
 	prefix := strings.TrimSuffix(srcKey, "/")
 	paginator := s3.NewListObjectsV2Paginator(s3c, &s3.ListObjectsV2Input{

@@ -105,3 +105,24 @@ jobs:
       - name: Stop MLflow
         if: always()
         run: docker rm -f mlflow || true
+
+  # Cross-server ModelVersionPromotion e2e: two MLflow servers + a shared MinIO
+  # (S3) artifact store. Version-independent, so it runs once (not per matrix).
+  promotion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.26.x"
+          cache: true
+      - name: Start MLflow source+dest + MinIO
+        run: make promo-up
+      - name: Run promotion e2e
+        run: make test_e2e_promotion
+      - name: Compose logs
+        if: always()
+        run: docker compose -f provider/e2e/docker-compose.promotion.yml logs || true
+      - name: Tear down
+        if: always()
+        run: make promo-down || true

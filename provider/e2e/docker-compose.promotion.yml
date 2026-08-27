@@ -1,0 +1,43 @@
+# Two MLflow tracking servers (source + destination) backed by a shared MinIO
+# (S3-compatible) artifact store, for the ModelVersionPromotion cross-server e2e.
+# Both servers run --no-serve-artifacts with s3:// artifact roots, matching the
+# real Baubap setup where MLflow reports guaranteed s3:// paths.
+services:
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  createbuckets:
+    image: minio/mc:latest
+    depends_on: [minio]
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set m http://minio:9000 minioadmin minioadmin; do sleep 1; done &&
+      mc mb -p m/mlflow-src m/mlflow-dst &&
+      echo buckets-ready"
+
+  mlflow-source:
+    image: ghcr.io/mlflow/mlflow:v2.16.2
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////tmp/mlflow.db
+      --default-artifact-root s3://mlflow-src/
+      --no-serve-artifacts
+    ports:
+      - "5001:5000"
+
+  mlflow-dest:
+    image: ghcr.io/mlflow/mlflow:v2.16.2
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////tmp/mlflow.db
+      --default-artifact-root s3://mlflow-dst/
+      --no-serve-artifacts
+    ports:
+      - "5002:5000"
