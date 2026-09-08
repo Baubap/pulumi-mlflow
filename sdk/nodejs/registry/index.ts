@@ -35,6 +35,11 @@ export type ModelVersion = import("./modelVersion").ModelVersion;
 export const ModelVersion: typeof import("./modelVersion").ModelVersion = null as any;
 utilities.lazyLoad(exports, ["ModelVersion"], () => require("./modelVersion"));
 
+export { ModelVersionPromotionArgs } from "./modelVersionPromotion";
+export type ModelVersionPromotion = import("./modelVersionPromotion").ModelVersionPromotion;
+export const ModelVersionPromotion: typeof import("./modelVersionPromotion").ModelVersionPromotion = null as any;
+utilities.lazyLoad(exports, ["ModelVersionPromotion"], () => require("./modelVersionPromotion"));
+
 export { RegisteredModelArgs } from "./registeredModel";
 export type RegisteredModel = import("./registeredModel").RegisteredModel;
 export const RegisteredModel: typeof import("./registeredModel").RegisteredModel = null as any;
@@ -67,6 +72,8 @@ const _module = {
         switch (type) {
             case "mlflow:registry:ModelVersion":
                 return new ModelVersion(name, <any>undefined, { urn })
+            case "mlflow:registry:ModelVersionPromotion":
+                return new ModelVersionPromotion(name, <any>undefined, { urn })
             case "mlflow:registry:RegisteredModel":
                 return new RegisteredModel(name, <any>undefined, { urn })
             case "mlflow:registry:RegisteredModelAlias":

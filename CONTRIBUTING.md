@@ -134,18 +134,17 @@ front-matter). How-to guides go in `docs/how-to/`.
 - **Unit (hermetic):** each module has `_test.go` that stands up an `httptest` fake MLflow, points the provider at
   it, and runs `integration.LifeCycleTest`. Note that `LifeCycleTest` does **not** call `Configure` — the test must
   call `server.Configure(...)` with the tracking URI. Run with `make test_provider`.
-- **End-to-end (real server):** `provider/e2e` (build tag `e2e`) drives the full lifecycle against a real MLflow
-  server via the in-process provider (no SDKs needed).
+- **End-to-end (real servers):** `provider/e2e` (build tag `e2e`) drives the full lifecycle **and** cross-server
+  `ModelVersionPromotion` against real MLflow servers via the in-process provider (no SDKs needed). A single Docker
+  stack (`docker-compose.e2e.yml`) brings up two MLflow servers (source `:5001`, dest `:5002`) + a shared MinIO.
 
   ```bash
-  make mlflow-up && make test_e2e && make mlflow-down     # single version
-  make test_matrix MLFLOW_TAGS="v2.16.2 v3.1.0"           # sweep versions
-  # Point at existing servers instead of Docker:
-  MLFLOW_TRACKING_URIS="https://a,https://b" make test_e2e
+  make e2e-up && make test_e2e && make e2e-down       # full suite
+  make e2e-up MLFLOW_TAG=v3.15.1                       # pin the MLflow version
   ```
 
-  > On macOS, port 5000 is often taken by AirPlay — use `MLFLOW_PORT=5050`. Model-version `source` must be a
-  > non-local URI (e.g. `s3://...`) unless a `run_id` is supplied.
+  > Model-version `source` must be a non-local URI (e.g. `s3://...`) unless a `run_id` is supplied. The
+  > `mlflow-artifacts:/` (proxy) copy backend is covered by a hermetic unit test (`TestCopyArtifactsProxy`).
 
 - **Lint:** `make lint` (golangci-lint).
 

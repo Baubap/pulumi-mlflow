@@ -19,7 +19,7 @@ The provider is organized into three modules:
 | Module | Resources | What it manages |
 |---|---|---|
 | `index` (tracking) | `Experiment` | Experiments that group runs and artifacts |
-| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias`, `RegisteredModelTag` | The Model Registry: models, versions, deployment aliases, and single-tag management |
+| `registry` | `RegisteredModel`, `ModelVersion`, `RegisteredModelAlias`, `RegisteredModelTag`, `ModelVersionPromotion` | The Model Registry: models, versions, deployment aliases, single-tag management, and cross-server promotion |
 | `auth` | `User`, `ExperimentPermission`, `RegisteredModelPermission` | Access control (requires the `mlflow.server.auth` app) |
 
 Each module also ships read-only **functions** (data sources) such as `getRegisteredModel`,
@@ -151,6 +151,7 @@ deprecated field (for example, `ModelVersion.stage` on a 3.x server).
 - [Promote a model with aliases](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/promote-model-with-aliases.md) — blue/green model rollouts using `champion`/`challenger` aliases.
 - [Register a model from an existing experiment](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/register-model-from-existing-experiment.md) — reference an experiment with a data source and build the registry entry around it.
 - [Tag a model you don't own](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/tag-existing-registry-entities.md) — attach a single governance tag (e.g. the serving host) to an externally-owned model with `RegisteredModelTag`.
+- [Promote a model across servers](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/promote-across-servers.md) — deep-copy a version (artifacts included) from one tracking server to another with `ModelVersionPromotion`.
 - [Set up access control](https://github.com/Baubap/pulumi-mlflow/blob/main/docs/how-to/access-control.md) — manage users and per-experiment / per-model permissions.
 
 ## Importing existing resources
