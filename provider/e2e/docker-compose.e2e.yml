@@ -1,7 +1,9 @@
-# Two MLflow tracking servers (source + destination) backed by a shared MinIO
-# (S3-compatible) artifact store, for the ModelVersionPromotion cross-server e2e.
-# Both servers run --no-serve-artifacts with s3:// artifact roots, matching the
-# real Baubap setup where MLflow reports guaranteed s3:// paths.
+# Full e2e stack: two MLflow tracking servers (source :5001, dest :5002) backed
+# by a shared MinIO (S3) artifact store. One stack drives the whole e2e suite —
+# the per-resource lifecycle tests run against the dest server, and the
+# ModelVersionPromotion tests copy source -> dest. Both servers run
+# --no-serve-artifacts with s3:// roots, matching the real Baubap setup.
+# Override the MLflow version with MLFLOW_TAG (defaults to v2.16.2).
 services:
   minio:
     image: minio/minio:latest
@@ -23,7 +25,7 @@ services:
       echo buckets-ready"
 
   mlflow-source:
-    image: ghcr.io/mlflow/mlflow:v2.16.2
+    image: ghcr.io/mlflow/mlflow:${MLFLOW_TAG:-v2.16.2}
     command: >
       mlflow server --host 0.0.0.0 --port 5000
       --backend-store-uri sqlite:////tmp/mlflow.db
@@ -33,7 +35,7 @@ services:
       - "5001:5000"
 
   mlflow-dest:
-    image: ghcr.io/mlflow/mlflow:v2.16.2
+    image: ghcr.io/mlflow/mlflow:${MLFLOW_TAG:-v2.16.2}
     command: >
       mlflow server --host 0.0.0.0 --port 5000
       --backend-store-uri sqlite:////tmp/mlflow.db

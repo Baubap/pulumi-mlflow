@@ -82,7 +82,7 @@ func promotionFakeServer(t *testing.T) integration.Server {
 
 	// Stub the artifact byte-copy (the S3 part) for the hermetic test.
 	orig := copyArtifactsFn
-	copyArtifactsFn = func(_ context.Context, _ *client.Client, _, _ string) error { return nil }
+	copyArtifactsFn = func(_ context.Context, _, _ *client.Client, _, _ string) error { return nil }
 	t.Cleanup(func() { copyArtifactsFn = orig })
 
 	prov, err := infer.NewProviderBuilder().

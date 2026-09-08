@@ -172,7 +172,7 @@ func (ModelVersionPromotion) Create(
 		subPath = lastPathSegment(srcMv.Source)
 	}
 	destSource := strings.TrimRight(destRun.Info.ArtifactURI, "/") + "/" + subPath
-	if err := copyArtifactsFn(ctx, dst, srcMv.Source, destSource); err != nil {
+	if err := copyArtifactsFn(ctx, src, dst, srcMv.Source, destSource); err != nil {
 		return infer.CreateResponse[ModelVersionPromotionState]{}, fmt.Errorf("copying artifacts %s -> %s: %w", srcMv.Source, destSource, err)
 	}
 
