@@ -109,7 +109,9 @@ jobs:
   publish_npm:
     name: publish npm SDK (trusted publishing)
     needs: publish_plugin
-    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
+    # GitHub-hosted on purpose: npm accepts provenance only from GitHub-hosted
+    # runners, and Blacksmith counts as self-hosted (E422 on publish).
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write # OIDC token for npm trusted publishing — no NPM_TOKEN needed
       contents: read
