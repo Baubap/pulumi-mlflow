@@ -36,7 +36,7 @@ permissions:
 jobs:
   # Resolve the parametrizable inputs into a version matrix.
   config:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     outputs:
       versions: ${{ steps.set.outputs.versions }}
     steps:
@@ -63,7 +63,7 @@ jobs:
   # One ephemeral MLflow server per version tag; run the full lifecycle suite.
   ephemeral:
     needs: config
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     strategy:
       fail-fast: false
       matrix:
@@ -71,7 +71,7 @@ jobs:
     env:
       MLFLOW_TRACKING_URI: http://localhost:5000
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
       - uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"

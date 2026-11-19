@@ -19,9 +19,9 @@ jobs:
   # required by this repo's `main` branch-protection rule.
   build_test:
     name: continuous-integration
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
       - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
@@ -45,9 +45,9 @@ jobs:
 
   lint:
     name: lint
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
       - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GOVERSION }}
@@ -59,11 +59,11 @@ jobs:
 
   schema_check:
     name: schema breaking-change check
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     if: github.event_name == 'pull_request'
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
         with:
           fetch-depth: 0
       - uses: actions/setup-go@v6
