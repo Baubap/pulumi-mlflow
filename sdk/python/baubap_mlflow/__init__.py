@@ -55,6 +55,7 @@ _utilities.register(
   "fqn": "baubap_mlflow.registry",
   "classes": {
    "mlflow:registry:ModelVersion": "ModelVersion",
+   "mlflow:registry:ModelVersionPromotion": "ModelVersionPromotion",
    "mlflow:registry:RegisteredModel": "RegisteredModel",
    "mlflow:registry:RegisteredModelAlias": "RegisteredModelAlias",
    "mlflow:registry:RegisteredModelTag": "RegisteredModelTag"

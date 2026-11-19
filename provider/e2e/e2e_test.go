@@ -14,8 +14,8 @@
 // Optional auth (applied to all servers): MLFLOW_TRACKING_USERNAME/PASSWORD/TOKEN.
 // Tests skip when no URI is configured.
 //
-// Local: make mlflow-up && make test_e2e && make mlflow-down
-// Both majors: make test_matrix   |   Many servers: MLFLOW_TRACKING_URIS=a,b,c make test_e2e
+// Local: make e2e-up && make test_e2e && make e2e-down
+// Many servers: MLFLOW_TRACKING_URIS=a,b,c make test_e2e
 package e2e
 
 import (
@@ -69,7 +69,7 @@ func forEachServer(t *testing.T, body func(t *testing.T, uri string)) {
 	t.Helper()
 	uris := serverURIs()
 	if len(uris) == 0 {
-		t.Skip("no MLflow server configured; set MLFLOW_TRACKING_URI(S) (or `make mlflow-up`)")
+		t.Skip("no MLflow server configured; set MLFLOW_TRACKING_URI(S) (or `make e2e-up`)")
 	}
 	for i, uri := range uris {
 		i, uri := i, uri

@@ -12,6 +12,7 @@ from .get_model_version_by_alias import *
 from .get_model_version_download_uri import *
 from .get_registered_model import *
 from .model_version import *
+from .model_version_promotion import *
 from .registered_model import *
 from .registered_model_alias import *
 from .registered_model_tag import *

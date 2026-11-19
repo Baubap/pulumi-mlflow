@@ -40,6 +40,7 @@
         "registry/getRegisteredModel.ts",
         "registry/index.ts",
         "registry/modelVersion.ts",
+        "registry/modelVersionPromotion.ts",
         "registry/registeredModel.ts",
         "registry/registeredModelAlias.ts",
         "registry/registeredModelTag.ts",
