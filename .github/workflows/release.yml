@@ -118,6 +118,17 @@ jobs:
           set-env: PROVIDER_VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # pulumi-package-publisher runs `pulumictl`, `pulumi package publish-sdk` and
+      # `npm whoami`, and installs none of them; setup-node's registry-url writes the
+      # .npmrc that reads NODE_AUTH_TOKEN.
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODEVERSION }}
+          registry-url: https://registry.npmjs.org
+      - uses: pulumi/actions@v7
+      - uses: jaxxstorm/action-install-gh-release@v3.0.0
+        with:
+          repo: pulumi/pulumictl
       # PyPI is published separately via OIDC trusted publishing (see publish_python).
       # Add ,dotnet / java here once their registry namespaces (NuGet / Sonatype) exist.
       - name: Publish npm SDK
@@ -132,7 +143,9 @@ jobs:
   publish_python:
     name: publish PyPI SDK (trusted publishing)
     needs: publish_plugin
-    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
+    # x86 on purpose: pypa/gh-action-pypi-publish runs a linux/amd64-only Docker
+    # image, which fails with "exec format error" on an arm64 runner.
+    runs-on: blacksmith-2vcpu-ubuntu-2404
     permissions:
       id-token: write # OIDC token for PyPI trusted publishing — no API token needed
       contents: read
