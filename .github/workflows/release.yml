@@ -76,8 +76,8 @@ jobs:
           npm install -g yarn
           make build_nodejs
       - name: Package SDK
-        # The file inside the artifact must be <lang>.tar.gz — pulumi-package-publisher
-        # (and publish_python) extract sdk/<lang>.tar.gz after download.
+        # The file inside the artifact must be <lang>.tar.gz — publish_npm and
+        # publish_python extract <lang>.tar.gz after download.
         run: tar -zcf ${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }} .
       - uses: actions/upload-artifact@v6
         with:
@@ -106,39 +106,40 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  publish_sdks:
-    name: publish npm SDK
+  publish_npm:
+    name: publish npm SDK (trusted publishing)
     needs: publish_plugin
     runs-on: blacksmith-2vcpu-ubuntu-2404-arm
+    permissions:
+      id-token: write # OIDC token for npm trusted publishing — no NPM_TOKEN needed
+      contents: read
     steps:
-      - uses: useblacksmith/checkout@v1
-      - name: Derive version from tag
-        uses: pulumi/provider-version-action@v2
-        with:
-          set-env: PROVIDER_VERSION
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # pulumi-package-publisher runs `pulumictl`, `pulumi package publish-sdk` and
-      # `npm whoami`, and installs none of them; setup-node's registry-url writes the
-      # .npmrc that reads NODE_AUTH_TOKEN.
+      # Trusted publishing needs npm >= 11.5.1; Node 24 ships npm 11.
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODEVERSION }}
+          node-version: "24.x"
           registry-url: https://registry.npmjs.org
-      - uses: pulumi/actions@v7
-      - uses: jaxxstorm/action-install-gh-release@v3.0.0
+      - name: Download the built Node.js SDK
+        uses: actions/download-artifact@v6
         with:
-          repo: pulumi/pulumictl
-      # PyPI is published separately via OIDC trusted publishing (see publish_python).
-      # Add ,dotnet / java here once their registry namespaces (NuGet / Sonatype) exist.
-      - name: Publish npm SDK
-        uses: pulumi/pulumi-package-publisher@v0.0.22
-        with:
-          sdk: nodejs
-          version: ${{ env.PROVIDER_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          name: nodejs-sdk.tar.gz
+      - name: Check the package version matches the tag
+        run: |
+          mkdir -p sdk/nodejs
+          tar -xzf nodejs.tar.gz -C sdk/nodejs
+          npm --version
+          want="${GITHUB_REF_NAME#v}"
+          got="$(jq -r .version sdk/nodejs/bin/package.json)"
+          if [ "$got" != "$want" ]; then
+            echo "::error::package.json version $got does not match tag $GITHUB_REF_NAME"
+            exit 1
+          fi
+      # npm exchanges the job's OIDC token for a one-time publish token and adds
+      # provenance. The trusted publisher on npmjs.com must name this repo and
+      # release.yml. Add dotnet / java jobs once their registry namespaces exist.
+      - name: Publish to npm via OIDC
+        working-directory: sdk/nodejs/bin
+        run: npm publish --access public
 
   publish_python:
     name: publish PyPI SDK (trusted publishing)
