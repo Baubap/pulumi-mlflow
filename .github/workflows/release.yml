@@ -16,7 +16,7 @@ jobs:
     name: build provider + schema
     runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
       - name: Derive version from tag
         id: version
         uses: pulumi/provider-version-action@v2
@@ -50,7 +50,7 @@ jobs:
       matrix:
         language: [nodejs, python, go]
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
       - name: Derive version from tag
         uses: pulumi/provider-version-action@v2
         with:
@@ -91,7 +91,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
         with:
           fetch-depth: 0
       - uses: actions/setup-go@v6
@@ -111,7 +111,7 @@ jobs:
     needs: publish_plugin
     runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
       - name: Derive version from tag
         uses: pulumi/provider-version-action@v2
         with:
@@ -163,7 +163,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
         with:
           fetch-depth: 0
       - name: Derive version from tag

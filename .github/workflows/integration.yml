@@ -71,7 +71,7 @@ jobs:
     env:
       MLFLOW_TRACKING_URI: http://localhost:5000
     steps:
-      - uses: actions/checkout@v5
+      - uses: useblacksmith/checkout@v1
       - uses: actions/setup-go@v6
         with:
           go-version: "1.26.x"
