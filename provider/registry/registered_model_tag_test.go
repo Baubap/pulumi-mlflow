@@ -12,6 +12,7 @@ import (
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	"github.com/pulumi/pulumi-go-provider/integration"
+	presource "github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	"github.com/pulumi/pulumi/sdk/v3/go/property"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,6 +26,7 @@ func tagFakeServer(t *testing.T) integration.Server {
 	t.Helper()
 	var mu sync.Mutex
 	tags := map[string]string{} // key: "<name>|<key>"
+	models := map[string]bool{} // models that have been tagged, i.e. exist
 
 	mux := http.NewServeMux()
 	base := "/api/2.0/mlflow/"
@@ -36,6 +38,7 @@ func tagFakeServer(t *testing.T) integration.Server {
 		_ = json.NewDecoder(r.Body).Decode(&b)
 		mu.Lock()
 		tags[b.Name+"|"+b.Key] = b.Value
+		models[b.Name] = true
 		mu.Unlock()
 		writeJSON(w, map[string]any{})
 	})
@@ -49,6 +52,11 @@ func tagFakeServer(t *testing.T) integration.Server {
 	mux.HandleFunc(base+"registered-models/get", func(w http.ResponseWriter, r *http.Request) {
 		name := r.URL.Query().Get("name")
 		mu.Lock()
+		if !models[name] {
+			mu.Unlock()
+			writeErr(w, http.StatusNotFound, "RESOURCE_DOES_NOT_EXIST")
+			return
+		}
 		var kvs []client.KeyValue
 		for k, v := range tags {
 			if strings.HasPrefix(k, name+"|") {
@@ -104,4 +112,51 @@ func TestRegisteredModelTagLifecycle(t *testing.T) {
 			},
 		}},
 	}.Run(t, server)
+}
+
+// readTag refreshes a RegisteredModelTag the way `pulumi refresh` (state set) or
+// `pulumi import` (state empty) does.
+func readTag(t *testing.T, s integration.Server, id string, state map[string]any) p.ReadResponse {
+	t.Helper()
+	resp, err := s.Read(p.ReadRequest{
+		ID:         id,
+		Urn:        presource.NewURN("test", "test", "", "mlflow:registry:RegisteredModelTag", "tag"),
+		Properties: propMap(state),
+	})
+	require.NoError(t, err)
+	return resp
+}
+
+// TestRegisteredModelTagReadSlashes: MLflow allows '/' in tag keys (and, in 2.x,
+// in model names), so the <model>/<key> ID is ambiguous. Refresh must use the
+// saved state; import must find whichever split names an existing tag.
+func TestRegisteredModelTagReadSlashes(t *testing.T) {
+	cases := []struct {
+		name, model, key string
+	}{
+		{"plain", "fraud-detector", "model_serving_host"},
+		{"slash in key", "fraud-detector", "serving/host"},
+		{"slash in model (MLflow 2.x)", "team/fraud-detector", "owner"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := tagFakeServer(t)
+			_, err := s.Create(p.CreateRequest{
+				Urn: presource.NewURN("test", "test", "", "mlflow:registry:RegisteredModelTag", "tag"),
+				Properties: propMap(map[string]any{
+					"name": tc.model, "key": tc.key, "value": "v",
+				}),
+			})
+			require.NoError(t, err)
+			id := tc.model + "/" + tc.key
+
+			refreshed := readTag(t, s, id, map[string]any{"name": tc.model, "key": tc.key, "value": "v"})
+			assert.Equal(t, id, refreshed.ID, "refresh must not report the tag as deleted")
+
+			imported := readTag(t, s, id, map[string]any{})
+			require.Equal(t, id, imported.ID, "import must find the tag")
+			assert.Equal(t, tc.model, imported.Properties.Get("name").AsString())
+			assert.Equal(t, tc.key, imported.Properties.Get("key").AsString())
+		})
+	}
 }
