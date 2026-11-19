@@ -19,7 +19,7 @@ jobs:
   # required by this repo's `main` branch-protection rule.
   build_test:
     name: continuous-integration
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
@@ -45,7 +45,7 @@ jobs:
 
   lint:
     name: lint
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
@@ -59,7 +59,7 @@ jobs:
 
   schema_check:
     name: schema breaking-change check
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     if: github.event_name == 'pull_request'
     continue-on-error: true
     steps:

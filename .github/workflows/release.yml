@@ -14,7 +14,7 @@ env:
 jobs:
   prerequisites:
     name: build provider + schema
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     steps:
       - uses: actions/checkout@v5
       - name: Derive version from tag
@@ -44,7 +44,7 @@ jobs:
   build_sdks:
     name: build ${{ matrix.language }} SDK
     needs: prerequisites
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     strategy:
       fail-fast: false
       matrix:
@@ -87,7 +87,7 @@ jobs:
   publish_plugin:
     name: publish plugin binaries (GitHub Release)
     needs: build_sdks
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404-arm
     permissions:
       contents: write
     steps:
@@ -109,7 +109,7 @@ jobs:
   publish_sdks:
     name: publish npm SDK
     needs: publish_plugin
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     steps:
       - uses: actions/checkout@v5
       - name: Derive version from tag
@@ -132,7 +132,7 @@ jobs:
   publish_python:
     name: publish PyPI SDK (trusted publishing)
     needs: publish_plugin
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       id-token: write # OIDC token for PyPI trusted publishing — no API token needed
       contents: read
@@ -159,7 +159,7 @@ jobs:
   publish_go_sdk:
     name: publish Go SDK (module tag)
     needs: publish_plugin
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: write
     steps:
