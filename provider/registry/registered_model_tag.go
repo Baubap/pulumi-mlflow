@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 
@@ -66,12 +65,17 @@ func (r *RegisteredModelTag) Annotate(a infer.Annotator) {
 
 func rmTagID(name, key string) string { return name + "/" + key }
 
-func parseRMTagID(id string) (name, key string, ok bool) {
-	i := strings.LastIndexByte(id, '/')
-	if i <= 0 || i == len(id)-1 {
-		return "", "", false
+// rmTagIDSplits returns every (name, key) a `<name>/<key>` ID can stand for,
+// last slash first. MLflow allows '/' in tag keys, and in model names before
+// 3.x, so the ID alone is ambiguous; only import has nothing better to go on.
+func rmTagIDSplits(id string) [][2]string {
+	var out [][2]string
+	for i := len(id) - 2; i > 0; i-- {
+		if id[i] == '/' {
+			out = append(out, [2]string{id[:i], id[i+1:]})
+		}
 	}
-	return id[:i], id[i+1:], true
+	return out
 }
 
 func rmSetTag(ctx context.Context, api *client.Client, name, key, value string) error {
@@ -103,30 +107,34 @@ func (RegisteredModelTag) Create(
 }
 
 // Read fetches the current tag value from the model; if the model or the tag is
-// gone, it returns an empty ID so Pulumi reconciles the deletion.
+// gone, it returns an empty ID so Pulumi reconciles the deletion. It reads the
+// saved name and key; the ID is parsed only on import, when there is no state.
 func (RegisteredModelTag) Read(
 	ctx context.Context, req infer.ReadRequest[RegisteredModelTagArgs, RegisteredModelTagState],
 ) (infer.ReadResponse[RegisteredModelTagArgs, RegisteredModelTagState], error) {
-	name, key, ok := parseRMTagID(req.ID)
-	if !ok {
-		name, key = req.State.Name, req.State.Key
+	candidates := [][2]string{{req.State.Name, req.State.Key}}
+	if req.State.Name == "" || req.State.Key == "" {
+		candidates = rmTagIDSplits(req.ID)
 	}
 	api := infer.GetConfig[client.Config](ctx).Client()
-	dto, err := getRegisteredModel(ctx, api, name)
-	if err != nil {
+	for _, c := range candidates {
+		name, key := c[0], c[1]
+		dto, err := getRegisteredModel(ctx, api, name)
 		if errors.Is(err, client.ErrNotFound) {
-			return infer.ReadResponse[RegisteredModelTagArgs, RegisteredModelTagState]{}, nil
+			continue
 		}
-		return infer.ReadResponse[RegisteredModelTagArgs, RegisteredModelTagState]{}, err
-	}
-	for _, t := range dto.Tags {
-		if t.Key == key {
-			args := RegisteredModelTagArgs{Name: name, Key: key, Value: t.Value}
-			return infer.ReadResponse[RegisteredModelTagArgs, RegisteredModelTagState]{
-				ID:     req.ID,
-				Inputs: args,
-				State:  RegisteredModelTagState{RegisteredModelTagArgs: args},
-			}, nil
+		if err != nil {
+			return infer.ReadResponse[RegisteredModelTagArgs, RegisteredModelTagState]{}, err
+		}
+		for _, t := range dto.Tags {
+			if t.Key == key {
+				args := RegisteredModelTagArgs{Name: name, Key: key, Value: t.Value}
+				return infer.ReadResponse[RegisteredModelTagArgs, RegisteredModelTagState]{
+					ID:     req.ID,
+					Inputs: args,
+					State:  RegisteredModelTagState{RegisteredModelTagArgs: args},
+				}, nil
+			}
 		}
 	}
 	return infer.ReadResponse[RegisteredModelTagArgs, RegisteredModelTagState]{}, nil
