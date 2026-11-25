@@ -35,6 +35,13 @@ class _ExportableConfig(types.ModuleType):
         return __config__.get('password') or (_utilities.get_env('MLFLOW_TRACKING_PASSWORD') or '')
 
     @_builtins.property
+    def plugin_download_url(self) -> Optional[str]:
+        """
+        Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+        """
+        return __config__.get('pluginDownloadURL')
+
+    @_builtins.property
     def token(self) -> str:
         """
         Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.

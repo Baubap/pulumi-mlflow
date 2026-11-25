@@ -24,6 +24,11 @@ password: str
 Password for HTTP Basic authentication.
 """
 
+pluginDownloadURL: Optional[str]
+"""
+Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+"""
+
 token: str
 """
 Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.

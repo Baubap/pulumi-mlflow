@@ -53,6 +53,10 @@
         },
         "secret": true
       },
+      "pluginDownloadURL": {
+        "type": "string",
+        "description": "Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection."
+      },
       "token": {
         "type": "string",
         "description": "Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.",
@@ -214,6 +218,10 @@
         },
         "secret": true
       },
+      "pluginDownloadURL": {
+        "type": "string",
+        "description": "Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection."
+      },
       "token": {
         "type": "string",
         "description": "Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.",
@@ -246,6 +254,12 @@
         }
       }
     },
+    "required": [
+      "trackingUri",
+      "username",
+      "password",
+      "token"
+    ],
     "inputProperties": {
       "insecureSkipVerify": {
         "type": "boolean",
@@ -261,6 +275,10 @@
           ]
         },
         "secret": true
+      },
+      "pluginDownloadURL": {
+        "type": "string",
+        "description": "Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection."
       },
       "token": {
         "type": "string",

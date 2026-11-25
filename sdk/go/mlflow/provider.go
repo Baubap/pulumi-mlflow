@@ -15,13 +15,15 @@ type Provider struct {
 	pulumi.ProviderResourceState
 
 	// Password for HTTP Basic authentication.
-	Password pulumi.StringPtrOutput `pulumi:"password"`
+	Password pulumi.StringOutput `pulumi:"password"`
+	// Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+	PluginDownloadURL pulumi.StringPtrOutput `pulumi:"pluginDownloadURL"`
 	// Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
-	Token pulumi.StringPtrOutput `pulumi:"token"`
+	Token pulumi.StringOutput `pulumi:"token"`
 	// URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
-	TrackingUri pulumi.StringPtrOutput `pulumi:"trackingUri"`
+	TrackingUri pulumi.StringOutput `pulumi:"trackingUri"`
 	// Username for HTTP Basic authentication against the MLflow tracking server.
-	Username pulumi.StringPtrOutput `pulumi:"username"`
+	Username pulumi.StringOutput `pulumi:"username"`
 }
 
 // NewProvider registers a new resource with the given unique name, arguments, and options.
@@ -76,6 +78,8 @@ type providerArgs struct {
 	InsecureSkipVerify *bool `pulumi:"insecureSkipVerify"`
 	// Password for HTTP Basic authentication.
 	Password *string `pulumi:"password"`
+	// Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+	PluginDownloadURL *string `pulumi:"pluginDownloadURL"`
 	// Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
 	Token *string `pulumi:"token"`
 	// URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
@@ -90,6 +94,8 @@ type ProviderArgs struct {
 	InsecureSkipVerify pulumi.BoolPtrInput
 	// Password for HTTP Basic authentication.
 	Password pulumi.StringPtrInput
+	// Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+	PluginDownloadURL pulumi.StringPtrInput
 	// Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
 	Token pulumi.StringPtrInput
 	// URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
@@ -136,23 +142,28 @@ func (o ProviderOutput) ToProviderOutputWithContext(ctx context.Context) Provide
 }
 
 // Password for HTTP Basic authentication.
-func (o ProviderOutput) Password() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.Password }).(pulumi.StringPtrOutput)
+func (o ProviderOutput) Password() pulumi.StringOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringOutput { return v.Password }).(pulumi.StringOutput)
+}
+
+// Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+func (o ProviderOutput) PluginDownloadURL() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.PluginDownloadURL }).(pulumi.StringPtrOutput)
 }
 
 // Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
-func (o ProviderOutput) Token() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.Token }).(pulumi.StringPtrOutput)
+func (o ProviderOutput) Token() pulumi.StringOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringOutput { return v.Token }).(pulumi.StringOutput)
 }
 
 // URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
-func (o ProviderOutput) TrackingUri() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.TrackingUri }).(pulumi.StringPtrOutput)
+func (o ProviderOutput) TrackingUri() pulumi.StringOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringOutput { return v.TrackingUri }).(pulumi.StringOutput)
 }
 
 // Username for HTTP Basic authentication against the MLflow tracking server.
-func (o ProviderOutput) Username() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.Username }).(pulumi.StringPtrOutput)
+func (o ProviderOutput) Username() pulumi.StringOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringOutput { return v.Username }).(pulumi.StringOutput)
 }
 
 func init() {

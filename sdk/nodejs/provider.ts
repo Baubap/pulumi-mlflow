@@ -22,19 +22,23 @@ export class Provider extends pulumi.ProviderResource {
     /**
      * Password for HTTP Basic authentication.
      */
-    declare public readonly password: pulumi.Output<string | undefined>;
+    declare public readonly password: pulumi.Output<string>;
+    /**
+     * Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+     */
+    declare public readonly pluginDownloadURL: pulumi.Output<string | undefined>;
     /**
      * Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
      */
-    declare public readonly token: pulumi.Output<string | undefined>;
+    declare public readonly token: pulumi.Output<string>;
     /**
      * URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
      */
-    declare public readonly trackingUri: pulumi.Output<string | undefined>;
+    declare public readonly trackingUri: pulumi.Output<string>;
     /**
      * Username for HTTP Basic authentication against the MLflow tracking server.
      */
-    declare public readonly username: pulumi.Output<string | undefined>;
+    declare public readonly username: pulumi.Output<string>;
 
     /**
      * Create a Provider resource with the given unique name, arguments, and options.
@@ -49,6 +53,7 @@ export class Provider extends pulumi.ProviderResource {
         {
             resourceInputs["insecureSkipVerify"] = pulumi.output(args?.insecureSkipVerify).apply(JSON.stringify);
             resourceInputs["password"] = (args?.password ? pulumi.secret(args.password) : undefined) ?? (utilities.getEnv("MLFLOW_TRACKING_PASSWORD") || "");
+            resourceInputs["pluginDownloadURL"] = args?.pluginDownloadURL;
             resourceInputs["token"] = (args?.token ? pulumi.secret(args.token) : undefined) ?? (utilities.getEnv("MLFLOW_TRACKING_TOKEN") || "");
             resourceInputs["trackingUri"] = (args?.trackingUri) ?? (utilities.getEnv("MLFLOW_TRACKING_URI") || "");
             resourceInputs["username"] = (args?.username) ?? (utilities.getEnv("MLFLOW_TRACKING_USERNAME") || "");
@@ -72,6 +77,10 @@ export interface ProviderArgs {
      * Password for HTTP Basic authentication.
      */
     password?: pulumi.Input<string | undefined>;
+    /**
+     * Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+     */
+    pluginDownloadURL?: pulumi.Input<string | undefined>;
     /**
      * Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
      */

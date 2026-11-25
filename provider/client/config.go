@@ -15,6 +15,10 @@ type Config struct {
 	Password           string `pulumi:"password,optional" provider:"secret"`
 	Token              string `pulumi:"token,optional" provider:"secret"`
 	InsecureSkipVerify bool   `pulumi:"insecureSkipVerify,optional"`
+	// PluginDownloadURL is where the engine downloaded this provider from. The
+	// engine adds it to a default provider's inputs; declaring it keeps it in
+	// the provider's diff on both sides, so an unchanged URL is not a change.
+	PluginDownloadURL string `pulumi:"pluginDownloadURL,optional"`
 
 	client *Client
 }
@@ -29,6 +33,8 @@ func (c *Config) Annotate(a infer.Annotator) {
 	a.Describe(&c.Password, "Password for HTTP Basic authentication.")
 	a.Describe(&c.Token, "Bearer token for authenticating against the MLflow tracking server. "+
 		"Takes precedence over username/password.")
+	a.Describe(&c.PluginDownloadURL, "Where the engine downloaded this provider plugin from. Set by the engine; "+
+		"not a setting of the MLflow connection.")
 	a.Describe(&c.InsecureSkipVerify, "Skip TLS certificate verification when connecting to the tracking "+
 		"server. Not recommended in production.")
 
