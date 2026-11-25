@@ -30,6 +30,17 @@ Object.defineProperty(exports, "password", {
 });
 
 /**
+ * Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+ */
+export declare const pluginDownloadURL: string | undefined;
+Object.defineProperty(exports, "pluginDownloadURL", {
+    get() {
+        return __config.get("pluginDownloadURL");
+    },
+    enumerable: true,
+});
+
+/**
  * Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
  */
 export declare const token: string;

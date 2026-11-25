@@ -29,6 +29,11 @@ func GetPassword(ctx *pulumi.Context) string {
 	return value
 }
 
+// Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+func GetPluginDownloadURL(ctx *pulumi.Context) string {
+	return config.Get(ctx, "mlflow:pluginDownloadURL")
+}
+
 // Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
 func GetToken(ctx *pulumi.Context) string {
 	v, err := config.Try(ctx, "mlflow:token")

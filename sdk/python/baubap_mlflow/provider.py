@@ -21,6 +21,7 @@ class ProviderArgs:
     def __init__(__self__, *,
                  insecure_skip_verify: pulumi.Input[Optional[_builtins.bool]] = None,
                  password: pulumi.Input[Optional[_builtins.str]] = None,
+                 plugin_download_url: pulumi.Input[Optional[_builtins.str]] = None,
                  token: pulumi.Input[Optional[_builtins.str]] = None,
                  tracking_uri: pulumi.Input[Optional[_builtins.str]] = None,
                  username: pulumi.Input[Optional[_builtins.str]] = None):
@@ -29,6 +30,7 @@ class ProviderArgs:
 
         :param pulumi.Input[_builtins.bool] insecure_skip_verify: Skip TLS certificate verification when connecting to the tracking server. Not recommended in production.
         :param pulumi.Input[_builtins.str] password: Password for HTTP Basic authentication.
+        :param pulumi.Input[_builtins.str] plugin_download_url: Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
         :param pulumi.Input[_builtins.str] token: Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
         :param pulumi.Input[_builtins.str] tracking_uri: URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
         :param pulumi.Input[_builtins.str] username: Username for HTTP Basic authentication against the MLflow tracking server.
@@ -39,6 +41,8 @@ class ProviderArgs:
             password = (_utilities.get_env('MLFLOW_TRACKING_PASSWORD') or '')
         if password is not None:
             pulumi.set(__self__, "password", password)
+        if plugin_download_url is not None:
+            pulumi.set(__self__, "plugin_download_url", plugin_download_url)
         if token is None:
             token = (_utilities.get_env('MLFLOW_TRACKING_TOKEN') or '')
         if token is not None:
@@ -75,6 +79,18 @@ class ProviderArgs:
     @password.setter
     def password(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "password", value)
+
+    @_builtins.property
+    @pulumi.getter(name="pluginDownloadURL")
+    def plugin_download_url(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+        """
+        return pulumi.get(self, "plugin_download_url")
+
+    @plugin_download_url.setter
+    def plugin_download_url(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "plugin_download_url", value)
 
     @_builtins.property
     @pulumi.getter
@@ -121,6 +137,7 @@ class Provider(pulumi.ProviderResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  insecure_skip_verify: pulumi.Input[Optional[_builtins.bool]] = None,
                  password: pulumi.Input[Optional[_builtins.str]] = None,
+                 plugin_download_url: pulumi.Input[Optional[_builtins.str]] = None,
                  token: pulumi.Input[Optional[_builtins.str]] = None,
                  tracking_uri: pulumi.Input[Optional[_builtins.str]] = None,
                  username: pulumi.Input[Optional[_builtins.str]] = None,
@@ -132,6 +149,7 @@ class Provider(pulumi.ProviderResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.bool] insecure_skip_verify: Skip TLS certificate verification when connecting to the tracking server. Not recommended in production.
         :param pulumi.Input[_builtins.str] password: Password for HTTP Basic authentication.
+        :param pulumi.Input[_builtins.str] plugin_download_url: Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
         :param pulumi.Input[_builtins.str] token: Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
         :param pulumi.Input[_builtins.str] tracking_uri: URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
         :param pulumi.Input[_builtins.str] username: Username for HTTP Basic authentication against the MLflow tracking server.
@@ -162,6 +180,7 @@ class Provider(pulumi.ProviderResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  insecure_skip_verify: pulumi.Input[Optional[_builtins.bool]] = None,
                  password: pulumi.Input[Optional[_builtins.str]] = None,
+                 plugin_download_url: pulumi.Input[Optional[_builtins.str]] = None,
                  token: pulumi.Input[Optional[_builtins.str]] = None,
                  tracking_uri: pulumi.Input[Optional[_builtins.str]] = None,
                  username: pulumi.Input[Optional[_builtins.str]] = None,
@@ -178,6 +197,7 @@ class Provider(pulumi.ProviderResource):
             if password is None:
                 password = (_utilities.get_env('MLFLOW_TRACKING_PASSWORD') or '')
             __props__.__dict__["password"] = None if password is None else pulumi.Output.secret(password)
+            __props__.__dict__["plugin_download_url"] = plugin_download_url
             if token is None:
                 token = (_utilities.get_env('MLFLOW_TRACKING_TOKEN') or '')
             __props__.__dict__["token"] = None if token is None else pulumi.Output.secret(token)
@@ -197,15 +217,23 @@ class Provider(pulumi.ProviderResource):
 
     @_builtins.property
     @pulumi.getter
-    def password(self) -> pulumi.Output[Optional[_builtins.str]]:
+    def password(self) -> pulumi.Output[_builtins.str]:
         """
         Password for HTTP Basic authentication.
         """
         return pulumi.get(self, "password")
 
     @_builtins.property
+    @pulumi.getter(name="pluginDownloadURL")
+    def plugin_download_url(self) -> pulumi.Output[Optional[_builtins.str]]:
+        """
+        Where the engine downloaded this provider plugin from. Set by the engine; not a setting of the MLflow connection.
+        """
+        return pulumi.get(self, "plugin_download_url")
+
+    @_builtins.property
     @pulumi.getter
-    def token(self) -> pulumi.Output[Optional[_builtins.str]]:
+    def token(self) -> pulumi.Output[_builtins.str]:
         """
         Bearer token for authenticating against the MLflow tracking server. Takes precedence over username/password.
         """
@@ -213,7 +241,7 @@ class Provider(pulumi.ProviderResource):
 
     @_builtins.property
     @pulumi.getter(name="trackingUri")
-    def tracking_uri(self) -> pulumi.Output[Optional[_builtins.str]]:
+    def tracking_uri(self) -> pulumi.Output[_builtins.str]:
         """
         URL of the MLflow tracking server, e.g. https://mlflow.example.com. May also be set via the MLFLOW_TRACKING_URI environment variable.
         """
@@ -221,7 +249,7 @@ class Provider(pulumi.ProviderResource):
 
     @_builtins.property
     @pulumi.getter
-    def username(self) -> pulumi.Output[Optional[_builtins.str]]:
+    def username(self) -> pulumi.Output[_builtins.str]:
         """
         Username for HTTP Basic authentication against the MLflow tracking server.
         """
