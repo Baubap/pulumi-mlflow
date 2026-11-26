@@ -30,5 +30,5 @@ from this repo's committed `schema.json` and `docs/`.
 ## Schema metadata (already wired into the provider builder)
 
 `displayName=MLflow`, `publisher=Baubap`, `repository`, `homepage`, `license=Apache-2.0`, `logoUrl`,
-`pluginDownloadURL=github://api.github.com/Baubap/pulumi-mlflow`, and
+`pluginDownloadURL=https://github.com/Baubap/pulumi-mlflow/releases/download/v${VERSION}`, and
 `keywords=[…, category/infrastructure, kind/native]` — see `provider/provider.go`.

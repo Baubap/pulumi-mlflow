@@ -53,7 +53,7 @@ pip install baubap-mlflow
 go get github.com/Baubap/pulumi-mlflow/sdk/go/mlflow
 ```
 
-The plugin binary is resolved from GitHub Releases via `pluginDownloadURL github://api.github.com/Baubap/pulumi-mlflow`,
+The plugin binary is resolved from GitHub Releases via `pluginDownloadURL https://github.com/Baubap/pulumi-mlflow/releases/download/v${VERSION}`,
 so `pulumi plugin install` and SDK auto-install work out of the box.
 
 ## Configuration
