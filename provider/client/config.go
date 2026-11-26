@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 
+	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 )
 
@@ -23,7 +24,41 @@ type Config struct {
 	client *Client
 }
 
-var _ infer.CustomConfigure = (*Config)(nil)
+var (
+	_ infer.CustomConfigure              = (*Config)(nil)
+	_ infer.CustomDiff[*Config, *Config] = (*Config)(nil)
+)
+
+// Diff replaces the provider, and every resource it manages, only when the
+// MLflow connection changes. PluginDownloadURL is where the engine downloaded
+// the plugin from, not a setting of the connection: the engine sets it on one
+// side and not the other when a stack moves between a pluginDownloadURL
+// resource option and the SDK's default, and that must not replace anything.
+// A new provider version is diffed by infer after this, as an in-place update.
+func (c *Config) Diff(_ context.Context, req infer.DiffRequest[*Config, *Config]) (infer.DiffResponse, error) {
+	olds, news := req.State, req.Inputs
+	if olds == nil {
+		olds = &Config{}
+	}
+	if news == nil {
+		news = &Config{}
+	}
+	changed := map[string]bool{
+		"trackingUri":        olds.TrackingURI != news.TrackingURI,
+		"username":           olds.Username != news.Username,
+		"password":           olds.Password != news.Password,
+		"token":              olds.Token != news.Token,
+		"insecureSkipVerify": olds.InsecureSkipVerify != news.InsecureSkipVerify,
+	}
+	resp := infer.DiffResponse{DetailedDiff: map[string]p.PropertyDiff{}}
+	for key, isChanged := range changed {
+		if isChanged {
+			resp.DetailedDiff[key] = p.PropertyDiff{Kind: p.UpdateReplace, InputDiff: true}
+			resp.HasChanges = true
+		}
+	}
+	return resp, nil
+}
 
 // Annotate documents the config fields and wires environment-variable fallbacks.
 func (c *Config) Annotate(a infer.Annotator) {
