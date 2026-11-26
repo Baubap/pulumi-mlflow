@@ -14,7 +14,7 @@
   "license": "Apache-2.0",
   "repository": "https://github.com/Baubap/pulumi-mlflow",
   "logoUrl": "https://raw.githubusercontent.com/Baubap/pulumi-mlflow/main/docs/logo.svg",
-  "pluginDownloadURL": "github://api.github.com/Baubap/pulumi-mlflow",
+  "pluginDownloadURL": "https://github.com/Baubap/pulumi-mlflow/releases/download/v${VERSION}",
   "publisher": "Baubap",
   "namespace": "baubap",
   "language": {

@@ -28,6 +28,6 @@ snapshot:
 changelog:
   disable: true
 # goreleaser creates the GitHub Release and attaches the plugin archives; the
-# Pulumi CLI resolves them via pluginDownloadURL github://api.github.com/Baubap/pulumi-mlflow.
+# Pulumi CLI resolves them via pluginDownloadURL https://github.com/Baubap/pulumi-mlflow/releases/download/v${VERSION}.
 release:
   disable: false

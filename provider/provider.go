@@ -27,7 +27,7 @@ func Provider() p.Provider {
 		WithHomepage("https://github.com/Baubap/pulumi-mlflow").
 		WithLicense("Apache-2.0").
 		WithLogoURL("https://raw.githubusercontent.com/Baubap/pulumi-mlflow/main/docs/logo.svg").
-		WithPluginDownloadURL("github://api.github.com/Baubap/pulumi-mlflow").
+		WithPluginDownloadURL("https://github.com/Baubap/pulumi-mlflow/releases/download/v${VERSION}").
 		WithKeywords("mlflow", "mlops", "machine-learning", "model-registry",
 			"category/infrastructure", "kind/native").
 		WithNamespace("baubap").

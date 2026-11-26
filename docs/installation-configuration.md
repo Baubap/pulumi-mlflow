@@ -15,7 +15,7 @@ The MLflow provider is available as a package in the following Pulumi languages:
 > .NET and Java SDKs are planned for a later release.
 
 The plugin binary is resolved from GitHub Releases via
-`pluginDownloadURL github://api.github.com/Baubap/pulumi-mlflow`, so `pulumi plugin install` and SDK
+`pluginDownloadURL https://github.com/Baubap/pulumi-mlflow/releases/download/v${VERSION}`, so `pulumi plugin install` and SDK
 auto-install work without a Registry entry.
 
 ## Configuration
